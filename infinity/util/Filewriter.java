@@ -51,7 +51,8 @@ public final class Filewriter
 
   public static void writeString(OutputStream os, String s, int length) throws IOException
   {
-    writeString(os, s, length, Charset.forName("ISO-8859-1")); // For NWN, no other conflicts?
+    writeString(os, s, length, StringResource.getCharset());
+//    writeString(os, s, length, Charset.forName("ISO-8859-1")); // For NWN, no other conflicts?
   }
 
   public static void writeString(OutputStream os, String s, int length, Charset charset) throws IOException

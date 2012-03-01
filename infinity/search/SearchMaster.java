@@ -157,7 +157,7 @@ public final class SearchMaster extends JPanel implements Runnable, ActionListen
   {
     index = 0;
     String term = tfinput.getText();
-    term = term.replaceAll("(\\W)", "\\\\$1");
+//    term = term.replaceAll("(\\W)", "\\\\$1");
     if (cbwhole.isSelected())
       term = ".*\\b" + term + "\\b.*";
     else

@@ -109,7 +109,7 @@ public final class TextResourceSearcher implements Runnable, ActionListener
   {
     String term = tfinput.getText();
     TextHitFrame resultFrame = new TextHitFrame(term, parent);
-    term = term.replaceAll("(\\W)", "\\\\$1");
+//    term = term.replaceAll("(\\W)", "\\\\$1");
     if (cbwhole.isSelected())
       term = ".*\\b" + term + "\\b.*";
     else
