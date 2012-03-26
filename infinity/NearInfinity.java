@@ -104,8 +104,8 @@ public final class NearInfinity extends JFrame implements ActionListener, Viewab
     String javaVersion = System.getProperty("java.specification.version");
     try {
       if (Integer.parseInt(javaVersion.substring(0, 1)) < 2 &&
-          Integer.parseInt(javaVersion.substring(2, 3)) < 5) {
-        JOptionPane.showMessageDialog(null, "Version 1.5 or newer of Java is required",
+          Integer.parseInt(javaVersion.substring(2, 3)) < 6) {
+        JOptionPane.showMessageDialog(null, "Version 1.6 or newer of Java is required",
                                       "Error", JOptionPane.ERROR_MESSAGE);
         System.exit(10);
       }

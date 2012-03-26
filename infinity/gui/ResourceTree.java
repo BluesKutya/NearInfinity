@@ -8,6 +8,7 @@ import infinity.NearInfinity;
 import infinity.icon.Icons;
 import infinity.resource.Resource;
 import infinity.resource.ResourceFactory;
+import infinity.resource.graphics.MosResource;
 import infinity.resource.key.*;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Stack;
 
@@ -27,6 +29,8 @@ public final class ResourceTree extends JPanel implements TreeSelectionListener,
   private final Stack<ResourceEntry> prevstack = new Stack<ResourceEntry>();
   private ResourceEntry prevnextnode, shownresource;
   private boolean showresource = true;
+  private PreviewWindow previewWindow = null;
+  private TreePath prevPath = null;
 
   public ResourceTree(ResourceTreeModel treemodel)
   {
@@ -57,6 +61,50 @@ public final class ResourceTree extends JPanel implements TreeSelectionListener,
     setLayout(new BorderLayout());
     add(new JScrollPane(tree), BorderLayout.CENTER);
     add(panel, BorderLayout.SOUTH);
+
+    if (BrowserMenuBar.getInstance().areaPreview())
+    {
+    	tree.addMouseMotionListener(new TreeMouseMotionListener());
+    	tree.addMouseWheelListener(new TreeMouseWheelListener());
+    }
+  }
+  
+  public void maybeShowPreview(TreePath path)
+  {
+	  if ( path == prevPath )
+		  return;
+	  
+      ResourceEntry resource;
+      String resourceName;
+      String[] splitedName;
+      ResourceEntry mosEntry;
+      MosResource mosResource;
+
+      resource = (ResourceEntry)path.getLastPathComponent();
+      resourceName = resource.getResourceName();
+      splitedName  = resourceName.split("\\.");
+      if (resource.getExtension().equalsIgnoreCase("ARE"))
+      {
+      	mosEntry = ResourceFactory.getInstance().getResourceEntry(splitedName[0]+".MOS");
+
+      	if (mosEntry == null)
+      	{
+      		if (previewWindow != null)
+      			previewWindow.setVisible(false);
+
+      		return;
+      	}
+
+      	mosResource = (MosResource)ResourceFactory.getResource(mosEntry);
+
+      	if (previewWindow == null)
+      		previewWindow = new PreviewWindow(NearInfinity.getInstance());
+
+      	previewWindow.setImage(mosResource.getImage());
+      	previewWindow.setVisible(true);
+      
+      	prevPath = path;
+      }
   }
 
 // --------------------- Begin Interface ActionListener ---------------------
@@ -238,8 +286,84 @@ public final class ResourceTree extends JPanel implements TreeSelectionListener,
       else
         showresource = true;
     }
+    
+    public void mouseExited(MouseEvent e)
+    {
+    	prevPath = null;
+    	if (previewWindow != null)
+    		previewWindow.setVisible(false);
+    }
+  }
+  
+  private final class TreeMouseMotionListener extends MouseAdapter
+  {
+    public void mouseMoved(MouseEvent e)
+    {
+        TreePath path = tree.getClosestPathForLocation(e.getX(), e.getY());
+        
+        if (path != null && path.getLastPathComponent() instanceof ResourceEntry)
+        {
+        	maybeShowPreview(path);
+        }
+        else if (previewWindow != null)
+        {
+        	prevPath = null;
+        	previewWindow.setVisible(false);
+        }
+    }
   }
 
+  private final class TreeMouseWheelListener extends MouseAdapter
+  {
+    public void mouseWheelMoved(MouseWheelEvent e)
+    {
+    	((JViewport) tree.getParent()).dispatchEvent(e);
+        TreePath path = tree.getClosestPathForLocation(e.getX(), 
+        		e.getY() + e.getWheelRotation()*e.getScrollAmount()*tree.getRowHeight());
+        
+        if (path != null && path.getLastPathComponent() instanceof ResourceEntry)
+        {
+        	maybeShowPreview(path);
+        }
+        else if (previewWindow != null)
+        {
+        	prevPath = null;
+        	previewWindow.setVisible(false);
+        }
+    }
+  }
+
+  private final class PreviewWindow extends Window
+  {
+	  private ImageIcon ImagePreview;
+
+	  public PreviewWindow(Frame owner)
+	  {
+		  super(owner);
+		  ImagePreview = new ImageIcon();
+		  this.add(new JLabel(ImagePreview));
+	  }
+
+	  public void setImage(BufferedImage areaMos)
+	  {
+		  setLocation(NearInfinity.getInstance().getX() + tree.getWidth() + 40, 
+				  NearInfinity.getInstance().getY() + 55);
+		  
+		  if(areaMos.getWidth() < 200 && areaMos.getHeight() < 200)
+		  {
+			  setSize(areaMos.getWidth() * 2, areaMos.getHeight() * 2);
+			  ImagePreview.setImage(areaMos.getScaledInstance(areaMos.getWidth() * 2, 
+					  areaMos.getHeight() * 2, Image.SCALE_SMOOTH));
+		  }
+		  else
+		  {
+			  setSize(areaMos.getWidth(), areaMos.getHeight());
+			  ImagePreview.setImage(areaMos);
+		  }
+		  repaint();
+	  }
+  }
+  
   private final class TreePopupMenu extends JPopupMenu implements ActionListener
   {
     private final JMenuItem mi_open = new JMenuItem("Open");

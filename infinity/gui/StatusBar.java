@@ -23,7 +23,7 @@ public final class StatusBar extends JPanel implements CaretListener
     cursorLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                                                              BorderFactory.createLineBorder(
                                                                      UIManager.getColor("controlShadow"))));
-    cursorLabel.setPreferredSize(new Dimension(75, cursorLabel.getPreferredSize().height));
+    cursorLabel.setPreferredSize(new Dimension(75,  cursorLabel.getPreferredSize().height));
     add(messageLabel, BorderLayout.CENTER);
     add(cursorLabel, BorderLayout.EAST);
     setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));

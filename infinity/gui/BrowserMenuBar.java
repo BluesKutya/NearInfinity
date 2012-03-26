@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
 
 public final class BrowserMenuBar extends JMenuBar
 {
-  public static final String VERSION = "v1.33 beta 21";
+  public static final String VERSION = "v1.33 beta 22";
   public static final int OVERRIDE_IN_THREE = 0, OVERRIDE_IN_OVERRIDE = 1, OVERRIDE_SPLIT = 2;
   public static final int LOOKFEEL_JAVA = 0, LOOKFEEL_WINDOWS = 1, LOOKFEEL_MOTIF = 2, LOOKFEEL_PLASTICXP = 3;
   public static final int RESREF_ONLY = 0, RESREF_REF_NAME = 1, RESREF_NAME_REF = 2;
@@ -55,6 +55,7 @@ public final class BrowserMenuBar extends JMenuBar
   private static final String OPTION_FONT = "Font";
   private static final String OPTION_BCSINDENT = "BcsIndent";
   private static final String OPTION_TLKCHARSET = "TLKCharset";
+  private static final String OPTION_AREAPREVIEW = "AreaPreview";
   private final EditMenu editMenu;
   private final FileMenu fileMenu;
   private final GameMenu gameMenu;
@@ -66,6 +67,7 @@ public final class BrowserMenuBar extends JMenuBar
   private final JRadioButtonMenuItem selectBcsIndent[] = new JRadioButtonMenuItem[BCSINDENT.length];
   private JCheckBoxMenuItem optionShowOffset, optionIgnoreOverride, optionIgnoreReadErrors, optionAutoConvMUS;
   private JCheckBoxMenuItem optionAutoConvWAV, optionAutocheckBCS, optionCacheOverride, optionCheckScriptNames;
+  private JCheckBoxMenuItem optionAreaPreview;
 
   public static BrowserMenuBar getInstance()
   {
@@ -128,6 +130,11 @@ public final class BrowserMenuBar extends JMenuBar
     return optionCacheOverride.isSelected();
   }
 
+  public boolean areaPreview()
+  {
+	  return optionAreaPreview.isSelected();
+  }
+  
   public void gameLoaded(int oldGame, String oldFile)
   {
     gameMenu.gameLoaded(oldGame, oldFile);
@@ -219,6 +226,7 @@ public final class BrowserMenuBar extends JMenuBar
     prefs.putBoolean(OPTION_AUTOCONVERT_WAV, optionAutoConvWAV.isSelected());
     prefs.putBoolean(OPTION_AUTOCHECK_BCS, optionAutocheckBCS.isSelected());
     prefs.putBoolean(OPTION_CACHEOVERRIDE, optionCacheOverride.isSelected());
+    prefs.putBoolean(OPTION_AREAPREVIEW, optionAreaPreview.isSelected());
     prefs.putInt(OPTION_SHOWRESREF, getResRefMode());
     prefs.putInt(OPTION_SHOWOVERRIDES, getOverrideMode());
     prefs.putInt(OPTION_LOOKANDFEEL, getLookAndFeel());
@@ -269,6 +277,9 @@ public final class BrowserMenuBar extends JMenuBar
     optionCacheOverride.setToolTipText("Without this option selected, Refresh Tree is required " +
                                        "to discover new override files added while NI is open");
     menu.add(optionCacheOverride);
+    optionAreaPreview =
+    new JCheckBoxMenuItem("Area preview", prefs.getBoolean(OPTION_AREAPREVIEW, true));
+    menu.add(optionAreaPreview);
 
 
     menu.addSeparator();
