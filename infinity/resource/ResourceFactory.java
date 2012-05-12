@@ -56,6 +56,7 @@ public final class ResourceFactory
   private File[] biffDirs;
   private JFileChooser fc;
   private ResourceTreeModel treeModel;
+  private static WeakHashMap<ResourceEntry, Resource> resourceCache;
 
   static
   {
@@ -226,7 +227,14 @@ public final class ResourceFactory
         else if (entry.getExtension().equalsIgnoreCase("SRC"))
           res = new SrcResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("DLG"))
-          res = new DlgResource(entry);
+        {
+        	res = resourceCache.get(entry);
+        	if (res == null)
+        	{
+        		res = new DlgResource(entry);
+        		resourceCache.put(entry, res);
+        	}
+        }
         else if (entry.getExtension().equalsIgnoreCase("SPL"))
           res = new SplResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("STO"))
@@ -278,6 +286,10 @@ public final class ResourceFactory
 
   public ResourceFactory(File file)
   {
+	if (resourceCache == null)
+		resourceCache = new WeakHashMap<ResourceEntry, Resource>();
+	else
+		resourceCache.clear();
     rootDir = file.getAbsoluteFile().getParentFile();
 
     // Main game detection

@@ -85,7 +85,9 @@ public final class ResourceTree extends JPanel implements TreeSelectionListener,
       splitedName  = resourceName.split("\\.");
       if (resource.getExtension().equalsIgnoreCase("ARE"))
       {
-      	mosEntry = ResourceFactory.getInstance().getResourceEntry(splitedName[0]+".MOS");
+    	prevPath = path;
+      	
+    	mosEntry = ResourceFactory.getInstance().getResourceEntry(splitedName[0]+".MOS");
 
       	if (mosEntry == null)
       	{
@@ -102,8 +104,6 @@ public final class ResourceTree extends JPanel implements TreeSelectionListener,
 
       	previewWindow.setImage(mosResource.getImage());
       	previewWindow.setVisible(true);
-      
-      	prevPath = path;
       }
   }
 
