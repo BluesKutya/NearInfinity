@@ -145,7 +145,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 				}
 
 				for (Transition trans : dlg.getTransList())
-					if (trans.getTriggerIndex() == nr)
+					if (trans.getTriggerIndex() == nr && trans.getFlag().isFlagSet(1))
 					{
 						path = treeModel.getPath(trans);
 						break;
@@ -163,7 +163,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 				}
 
 				for (Transition trans : dlg.getTransList())
-					if (trans.getActionIndex() == nr)
+					if (trans.getActionIndex() == nr && trans.getFlag().isFlagSet(2))
 					{
 						path = treeModel.getPath(trans);
 						break;
@@ -205,7 +205,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 				dialogTextPanel.display(state.getSuperStruct(), state, state.getNumber());
 				dialogActionPanel.clearDisplay();
 				if (state.getTriggerIndex() != 0xffffffff)
-					dialogTriggerPanel.display(state.getSuperStruct(), dlg.getStaTriList().get(state.getTriggerIndex()), state.getTriggerIndex());
+					dialogTriggerPanel.display(state.getSuperStruct(), ((DlgResource) state.getSuperStruct()).getStaTriList().get(state.getTriggerIndex()), state.getTriggerIndex());
 				else
 					dialogTriggerPanel.clearDisplay();
 
@@ -370,7 +370,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			    	if (((State) entry).getTriggerIndex() != -1)
 			    		return null;
 			    	else for (Transition trans : dlg.getTransList())
-			    		if (trans.getNextDialogState() == ((State) entry).getNumber())
+			    		if (trans.getNextDialogState() == ((State) entry).getNumber() && !trans.getFlag().isFlagSet(3))
 			    			return trans;
 			    if (entry instanceof Transition)
 					for (State state : dlg.getStateList())
@@ -704,7 +704,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 				}
 
 				for (Transition trans : dlg.getTransList()) {
-					if (trans.getTriggerIndex() == nr) {
+					if (trans.getTriggerIndex() == nr && trans.getFlag().isFlagSet(1)) {
 						transNrToShow = trans.getNumber();
 						stateNrToShow = findStateForTrans(transNrToShow);
 					}
@@ -720,7 +720,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 				}
 
 				for (Transition trans : dlg.getTransList()) {
-					if (trans.getActionIndex() == nr) {
+					if (trans.getActionIndex() == nr && trans.getFlag().isFlagSet(2)) {
 						transNrToShow = trans.getNumber();
 						stateNrToShow = findStateForTrans(transNrToShow);
 					}
