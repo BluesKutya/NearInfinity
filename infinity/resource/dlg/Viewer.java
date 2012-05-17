@@ -327,8 +327,8 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			public int getIndexOfChild(Object parent, Object child) {
 				if (parent instanceof State && child instanceof Transition)
 					if (((State) parent).getFirstTrans() <= ((Transition) child).getNumber() 
-						&& ((Transition) child).getNumber() < ((State) parent).getFirstTrans() + ((State) parent).getTransCount())
-						return (((State) parent).getFirstTrans() - ((Transition) child).getNumber());
+					&& ((Transition) child).getNumber() < ((State) parent).getFirstTrans() + ((State) parent).getTransCount())
+						return (((Transition) child).getNumber() - ((State) parent).getFirstTrans());
 					else
 						return -1;
 				else if (parent instanceof Transition && child instanceof State)
