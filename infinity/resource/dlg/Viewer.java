@@ -190,8 +190,11 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 						}
 			}
 
-			dialogTree.expandPath(path);
-			dialogTree.addSelectionPath(path);
+			if (path != null)
+			{
+				dialogTree.expandPath(path);
+				dialogTree.addSelectionPath(path);
+			}
 		}
 
 		public void valueChanged(TreeSelectionEvent e)
