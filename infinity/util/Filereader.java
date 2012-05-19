@@ -9,8 +9,8 @@ import java.nio.charset.Charset;
 
 public final class Filereader
 {
-  private static final byte[] buffer4 = new byte[4];
-  private static final byte[] buffer2 = new byte[2];
+//  private static final byte[] buffer4 = new byte[4];
+//  private static final byte[] buffer2 = new byte[2];
 
   public static void readBytes(InputStream is, byte buffer[]) throws IOException
   {
@@ -49,6 +49,7 @@ public final class Filereader
 
   public static int readInt(RandomAccessFile ranfile) throws IOException
   {
+	byte[] buffer4 = new byte[4];
     ranfile.readFully(buffer4);
     return Byteconvert.convertInt(buffer4, 0);
   }
@@ -71,6 +72,7 @@ public final class Filereader
 
   public static short readShort(RandomAccessFile ranfile) throws IOException
   {
+	byte[] buffer2 = new byte[2];
     ranfile.readFully(buffer2);
     return Byteconvert.convertShort(buffer2, 0);
   }
