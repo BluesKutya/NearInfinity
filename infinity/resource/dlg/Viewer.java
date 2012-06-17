@@ -266,7 +266,6 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 
 			public Object getChild(Object parent, int index)
 			{
-				int c = 0;
 				Transition trans;
 				DlgResource dlgRes;
 				
@@ -287,11 +286,8 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			    else if (parent instanceof DefaultMutableTreeNode)
 			    {
 					for (State state : dlg.getStateList())
-						if (state.getTriggerIndex() != -1)
-							if (c == index)
-								return state;
-							else
-								c++;
+						if (state.getTriggerIndex() == index)
+							return state;
 			    }
 			    return null;
 			}
@@ -373,12 +369,13 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			    	if (((State) entry).getTriggerIndex() != -1)
 			    		return null;
 			    	else for (Transition trans : dlg.getTransList())
-			    		if (trans.getNextDialogState() == ((State) entry).getNumber() && !trans.getFlag().isFlagSet(3))
+			    		if (dlg.getName().compareToIgnoreCase(trans.getNextDialog().getName()) == 0 
+			    		&& trans.getNextDialogState() == ((State) entry).getNumber() && !trans.getFlag().isFlagSet(3))
 			    			return trans;
 			    if (entry instanceof Transition)
 					for (State state : dlg.getStateList())
 						if (state.getFirstTrans() <= ((Transition) entry).getNumber()
-								&& ((Transition) entry).getNumber() < (state.getFirstTrans() + state.getTransCount()))
+						&& ((Transition) entry).getNumber() < (state.getFirstTrans() + state.getTransCount()))
 							return state;
 				return null;
 			}

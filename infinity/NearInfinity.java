@@ -120,6 +120,7 @@ public final class NearInfinity extends JFrame implements ActionListener, Viewab
   private NearInfinity()
   {
     super("Near Infinity");
+    setMinimumSize(new Dimension(800, 600));
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setIconImage(Icons.getIcon("Application16.gif").getImage());
     Preferences prefs = Preferences.userNodeForPackage(getClass());
