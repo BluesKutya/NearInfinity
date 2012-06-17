@@ -202,7 +202,9 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			State state;
 			Transition trans;
 			
-			if (e.getNewLeadSelectionPath().getLastPathComponent() instanceof State)
+			if (e.getNewLeadSelectionPath() == null)
+				return;
+			else if (e.getNewLeadSelectionPath().getLastPathComponent() instanceof State)
 			{
 				state = (State)e.getNewLeadSelectionPath().getLastPathComponent();
 				dialogTextPanel.display(state.getSuperStruct(), state, state.getNumber());
@@ -268,12 +270,12 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			{
 				Transition trans;
 				DlgResource dlgRes;
+				DefaultMutableTreeNode fake;
 				
 			    if (parent instanceof State)
 			    	return ((DlgResource) ((State) parent).getSuperStruct()).getTransList().get(((State) parent).getFirstTrans() + index);
 			    else if (parent instanceof Transition)
 			    {
-//			    	return ((DlgResource) ((Transition) parent).getSuperStruct()).getStateList().get(((Transition) parent).getNextDialogState());
 			    	trans = (Transition) parent;
 			    	if (trans.getName() == "None" || dlg.getName().compareToIgnoreCase(trans.getNextDialog().getName()) == 0)
 			    		return ((DlgResource) trans.getSuperStruct()).getStateList().get(trans.getNextDialogState());
@@ -283,30 +285,27 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			    		return dlgRes.getStateList().get(trans.getNextDialogState());
 			    	}
 			    }
-			    else if (parent instanceof DefaultMutableTreeNode)
+			    else if (parent == root)
 			    {
 					for (State state : dlg.getStateList())
 						if (state.getTriggerIndex() == index)
 							return state;
+					
+					fake = new DefaultMutableTreeNode("FAKE");
+					return fake;
 			    }
 			    return null;
 			}
 
 			public int getChildCount(Object parent)
 			{
-				int c = 0;
-				
 			    if (parent instanceof State)
 			    	return ((State) parent).getTransCount();
 			    else if (parent instanceof Transition)
 			    	return 1;
-			    else if (parent instanceof DefaultMutableTreeNode)
-			    {
-					for (State state : dlg.getStateList())
-						if (state.getTriggerIndex() != -1)
-							c++;
-					return c;
-			    }
+			    else if (parent == root)
+			    	return dlg.getStaTriList().size();
+
 			    return 0;
 			}
 
@@ -314,6 +313,8 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			{
 				if (node instanceof Transition)
 					return ((Transition) node).getFlag().isFlagSet(3);
+				else if (node instanceof DefaultMutableTreeNode && ((DefaultMutableTreeNode) node).getUserObject() == "FAKE")
+					return true;
 
 				return false;
 			}
@@ -332,7 +333,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 						return -1;
 				else if (parent instanceof Transition && child instanceof State)
 					if (((Transition) parent).getNextDialogState() == ((State) child).getNumber())
-						return 1;
+						return 0;
 					else
 						return -1;
 				return -1;
@@ -424,6 +425,12 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 						setIcon(Icons.getIcon("bottom.png"));
 						setText("<CONTINUE>");
 					}
+					return this;
+				}
+				else if (node instanceof DefaultMutableTreeNode && ((DefaultMutableTreeNode) node).getUserObject() == "FAKE")
+				{
+					setIcon(Icons.getIcon("Properties16.gif"));
+					setText("!!! NO VALID STATE !!!");
 					return this;
 				}
 				else
