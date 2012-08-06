@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Near Infinity" default="binary">
     <target name="binary">
-        <javac srcdir="." />
+        <javac srcdir="." destdir="bin" />
         <jar destfile="NearInfinity.jar"
              basedir="."
              includes="infinity/**/*"
