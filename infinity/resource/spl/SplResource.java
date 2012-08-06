@@ -37,7 +37,9 @@ public final class SplResource extends AbstractStruct implements Resource, HasAd
   private static final String[] s_spellflag = {"No flags set", "", "", "", "", "", "", "", "",
                                                "", "", "Hostile",
                                                "No LOS required", "Allow spotting", "Outdoors only",
-                                               "Non-magical ability", "Trigger/Contingency", "Non-combat ability"};
+                                               "Non-magical ability", "Trigger/Contingency",
+                                               "Non-combat ability", "", "", "", "", "", "", "",
+                                               "Ex: can target invisible", "Ex: castable when silenced"};
   private static final String[] s_exclude = { "None", "Chaotic", "Evil", "Good",
                                               "... Neutral", "Lawful", "Neutral ...",
                                               "Abjurer", "Conjurer", "Diviner", "Enchanter",
