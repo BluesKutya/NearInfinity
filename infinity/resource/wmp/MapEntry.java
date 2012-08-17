@@ -9,7 +9,7 @@ import infinity.resource.*;
 
 import javax.swing.*;
 
-final class MapEntry extends AbstractStruct implements HasAddRemovable, HasDetailViewer
+public final class MapEntry extends AbstractStruct implements HasAddRemovable, HasDetailViewer
 {
   MapEntry(AbstractStruct superStruct, byte buffer[], int offset, int nr) throws Exception
   {

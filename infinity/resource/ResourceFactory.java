@@ -111,7 +111,7 @@ public final class ResourceFactory
     return keyfile;
   }
 
-  public static Resource getResource(ResourceEntry entry)
+  synchronized public static Resource getResource(ResourceEntry entry)
   {
     Resource res = null;
     try {
@@ -245,9 +245,23 @@ public final class ResourceFactory
           res = new ChuResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("CRE") ||
                  entry.getExtension().equalsIgnoreCase("CHR"))
-          res = new CreResource(entry);
+        	{
+        	res = resourceCache.get(entry);
+        	if (res == null)
+        	{
+                res = new CreResource(entry);
+        		resourceCache.put(entry, res);
+        	}
+        }
         else if (entry.getExtension().equalsIgnoreCase("ARE"))
-          res = new AreResource(entry);
+        {
+        	res = resourceCache.get(entry);
+        	if (res == null)
+        	{
+        		res = new AreResource(entry);
+        		resourceCache.put(entry, res);
+        	}
+        }
         else if (entry.getExtension().equalsIgnoreCase("WFX"))
           res = new WfxResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("PRO"))
@@ -479,7 +493,7 @@ public final class ResourceFactory
     return treeModel;
   }
 
-  public List<ResourceEntry> getResources(String type)
+  public List<ResourceEntry> getResources(String type, boolean ignoreExtra)
   {
     List<ResourceEntry> list;
     ResourceTreeFolder bifnode = treeModel.getFolder(type);
@@ -488,17 +502,23 @@ public final class ResourceFactory
     else
       list = new ArrayList<ResourceEntry>();
     int initsize = list.size();
-    for (final String extraDir : games[currentGame].extraDirs) {
-      ResourceTreeFolder extranode = treeModel.getFolder(extraDir);
-      if (extranode != null)
-        list.addAll(extranode.getResourceEntries(type));
-    }
+    if (!ignoreExtra)
+      for (final String extraDir : games[currentGame].extraDirs) {
+        ResourceTreeFolder extranode = treeModel.getFolder(extraDir);
+        if (extranode != null)
+          list.addAll(extranode.getResourceEntries(type));
+      }
     ResourceTreeFolder overridenode = treeModel.getFolder(OVERRIDEFOLDER);
     if (overridenode != null)
       list.addAll(overridenode.getResourceEntries(type));
     if (list.size() > initsize)
       Collections.sort(list);
     return list;
+  }
+
+  public List<ResourceEntry> getResources(String type)
+  {
+	return getResources(type, false);
   }
 
   public void loadResources() throws Exception

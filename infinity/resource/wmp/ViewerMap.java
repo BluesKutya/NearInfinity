@@ -19,13 +19,13 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.image.*;
 
-final class ViewerMap extends JPanel implements ListSelectionListener
+public final class ViewerMap extends JPanel implements ListSelectionListener
 {
   private static final ImageIcon areaIcon = Icons.getIcon("Stop16.gif");
   private final BufferedImage map;
   private int xCoord = -1, yCoord, pixels[] = new int[16 * 16];
 
-  ViewerMap(MapEntry wmpMap)
+  public ViewerMap(MapEntry wmpMap)
   {
     BamResource icons = null;
     ResourceRef iconRef = (ResourceRef)wmpMap.getAttribute("Map icons");

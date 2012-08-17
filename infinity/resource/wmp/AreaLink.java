@@ -8,7 +8,7 @@ import infinity.datatype.*;
 import infinity.resource.AbstractStruct;
 import infinity.resource.AddRemovable;
 
-abstract class AreaLink extends AbstractStruct implements AddRemovable
+public abstract class AreaLink extends AbstractStruct implements AddRemovable
 {
   AreaLink(String name) throws Exception
   {

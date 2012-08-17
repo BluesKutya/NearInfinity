@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
 
 public final class BrowserMenuBar extends JMenuBar
 {
-  public static final String VERSION = "v1.33 beta 22";
+  public static final String VERSION = "v1.33 beta 23";
   public static final int OVERRIDE_IN_THREE = 0, OVERRIDE_IN_OVERRIDE = 1, OVERRIDE_SPLIT = 2;
   public static final int LOOKFEEL_JAVA = 0, LOOKFEEL_WINDOWS = 1, LOOKFEEL_MOTIF = 2, LOOKFEEL_PLASTICXP = 3;
   public static final int RESREF_ONLY = 0, RESREF_REF_NAME = 1, RESREF_NAME_REF = 2;
@@ -824,7 +824,7 @@ public final class BrowserMenuBar extends JMenuBar
     private final JMenuItem toolCheckResRef, toolIDSBrowser, toolDropZone, toolCheckCREInv;
     private final JMenuItem toolCheckIDSRef, toolCheckIDSBCSRef, toolCheckScripts, toolCheckStructs;
     private final JMenuItem toolCheckStringUse, toolCheckFileUse, toolMassExport;
-    private final JMenuItem toolCheckEffectsIndex;
+    private final JMenuItem toolCheckEffectsIndex, toolCheckArea, toolCheckWorldMap;
 //    private JMenuItem toolBatchJob;
     private final JCheckBoxMenuItem toolConsole, toolClipBoard;
 
@@ -844,6 +844,12 @@ public final class BrowserMenuBar extends JMenuBar
 
       addSeparator();
 
+      toolCheckArea = makeMenuItem("Check Areas...", -1, Icons.getIcon("Refresh16.gif"), -1, this);
+      add(toolCheckArea);
+
+      toolCheckWorldMap = makeMenuItem("Check WorldMap", -1, Icons.getIcon("Refresh16.gif"), -1, this);
+      add(toolCheckWorldMap);
+
       JMenu checkMenu = new JMenu("Check Triggers & Actions For");
       checkMenu.setIcon(Icons.getIcon("Refresh16.gif"));
       toolCheckAllDialog = new JMenuItem("All Dialogues");
@@ -859,9 +865,9 @@ public final class BrowserMenuBar extends JMenuBar
       add(toolCheckScripts);
 
       toolCheckCREInv =
-      makeMenuItem("Find CRE Items Not in Inventory", KeyEvent.VK_C, Icons.getIcon("Refresh16.gif"), -1,
+      makeMenuItem("Check CRE Inventory...", KeyEvent.VK_C, Icons.getIcon("Refresh16.gif"), -1,
                    this);
-      toolCheckCREInv.setToolTipText("Reports items present in the file but not in the inventory");
+//      toolCheckCREInv.setToolTipText("Reports items present in the file but not in the inventory");
       add(toolCheckCREInv);
 
       toolCheckResRef =
@@ -1013,7 +1019,7 @@ public final class BrowserMenuBar extends JMenuBar
       else if (event.getSource() == toolCheckResRef)
         new ResRefChecker();
       else if (event.getSource() == toolCheckCREInv)
-        new CreInvChecker();
+        new CreInvChecker(NearInfinity.getInstance());
       else if (event.getSource() == toolCheckIDSRef)
         new IDSRefChecker();
       else if (event.getSource() == toolCheckIDSBCSRef)
@@ -1030,6 +1036,10 @@ public final class BrowserMenuBar extends JMenuBar
         new MassExporter();
       else if (event.getSource() == toolCheckEffectsIndex)
         new EffectsIndexChecker();
+      else if (event.getSource() == toolCheckArea)
+        new AreaChecker(NearInfinity.getInstance());
+      else if (event.getSource() == toolCheckWorldMap)
+        new WorldMapChecker();
     }
   }
 

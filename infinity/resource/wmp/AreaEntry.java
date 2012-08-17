@@ -9,7 +9,7 @@ import infinity.resource.*;
 
 import javax.swing.*;
 
-final class AreaEntry extends AbstractStruct implements AddRemovable, HasDetailViewer, HasAddRemovable
+public final class AreaEntry extends AbstractStruct implements AddRemovable, HasDetailViewer, HasAddRemovable
 {
   private static final String s_flag[] = {"No flags set", "Visible", "Reveal from linked area",
                                           "Can be visited", "Has been visited"};

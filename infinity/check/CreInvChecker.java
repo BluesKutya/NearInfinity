@@ -6,7 +6,9 @@ package infinity.check;
 
 import infinity.NearInfinity;
 import infinity.datatype.DecNumber;
+import infinity.datatype.Flag;
 import infinity.datatype.HexNumber;
+import infinity.datatype.ResourceRef;
 import infinity.gui.*;
 import infinity.icon.Icons;
 import infinity.resource.*;
@@ -23,22 +25,67 @@ import java.util.List;
 
 public final class CreInvChecker implements Runnable, ActionListener, ListSelectionListener
 {
+  private static final String CHECKTYPES[] = {"Items Not in Inventory", 
+	  "Item attribute"};
+  private final ChildFrame selectframe = new ChildFrame("Creature check", true);
+  private final JButton bstart = new JButton("Check", Icons.getIcon("Find16.gif"));
+  private final JButton bcancel = new JButton("Cancel", Icons.getIcon("Delete16.gif"));
   private final List<StructEntry> items = new ArrayList<StructEntry>();
   private final List<StructEntry> slots = new ArrayList<StructEntry>();
+  private final JCheckBox[] typeButtons;
   private ChildFrame resultFrame;
   private JButton bopen, bopennew;
   private SortableTable table;
 
-  public CreInvChecker()
+  public CreInvChecker(Component parent)
   {
-    new Thread(this).start();
+	typeButtons = new JCheckBox[CHECKTYPES.length];
+	JPanel boxPanel = new JPanel(new GridLayout(0, 1));
+	for (int i = 0; i < typeButtons.length; i++) {
+		typeButtons[i] = new JCheckBox(CHECKTYPES[i], true);
+		boxPanel.add(typeButtons[i]);
+	}
+	bstart.setMnemonic('s');
+	bcancel.setMnemonic('c');
+	bstart.addActionListener(this);
+	bcancel.addActionListener(this);
+	selectframe.getRootPane().setDefaultButton(bstart);
+	selectframe.setIconImage(Icons.getIcon("Find16.gif").getImage());
+	boxPanel.setBorder(BorderFactory.createTitledBorder("Select test to check:"));
+
+	JPanel bpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	bpanel.add(bstart);
+	bpanel.add(bcancel);
+
+	JPanel mainpanel = new JPanel(new BorderLayout());
+	mainpanel.add(boxPanel, BorderLayout.CENTER);
+	mainpanel.add(bpanel, BorderLayout.SOUTH);
+	mainpanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+
+	JPanel pane = (JPanel)selectframe.getContentPane();
+	pane.setLayout(new BorderLayout());
+	pane.add(mainpanel, BorderLayout.CENTER);
+
+	selectframe.pack();
+	Center.center(selectframe, parent.getBounds());
+	selectframe.setVisible(true);
   }
 
 // --------------------- Begin Interface ActionListener ---------------------
 
   public void actionPerformed(ActionEvent event)
   {
-    if (event.getSource() == bopen) {
+	if (event.getSource() == bstart) {
+	  selectframe.setVisible(false);
+	  for (int i = 0; i < typeButtons.length; i++)
+		if (typeButtons[i].isSelected()) {
+		  new Thread(this).start();
+		  return;
+		}
+	}
+	else if (event.getSource() == bcancel)
+	  selectframe.setVisible(false);
+	else if (event.getSource() == bopen) {
       int row = table.getSelectedRow();
       if (row != -1) {
         ResourceEntry resourceEntry = (ResourceEntry)table.getValueAt(row, 0);
@@ -82,13 +129,16 @@ public final class CreInvChecker implements Runnable, ActionListener, ListSelect
     creFiles.addAll(ResourceFactory.getInstance().getResources("CHR"));
     ProgressMonitor progress = new ProgressMonitor(NearInfinity.getInstance(),
                                                    "Checking inventories...", null, 0, creFiles.size());
-    table = new SortableTable(new String[]{"File", "Name", "Item"},
-                              new Class[]{Object.class, Object.class, Object.class},
-                              new int[]{100, 100, 200});
+    table = new SortableTable(new String[]{"File", "Name", "Item", "Message"},
+                              new Class[]{Object.class, Object.class, Object.class, Object.class},
+                              new int[]{100, 100, 200, 200});
     for (int i = 0; i < creFiles.size(); i++) {
       ResourceEntry entry = creFiles.get(i);
       try {
-        checkCreature(new CreResource(entry));
+    	if (typeButtons[0].isSelected())
+    	  checkCreatureInventory((CreResource) ResourceFactory.getResource(entry));
+    	if (typeButtons[1].isSelected())
+      	  checkItemAttribute((CreResource) ResourceFactory.getResource(entry));
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -138,7 +188,7 @@ public final class CreInvChecker implements Runnable, ActionListener, ListSelect
               ResourceEntry resourceEntry = (ResourceEntry)table.getValueAt(row, 0);
               Resource resource = ResourceFactory.getResource(resourceEntry);
               new ViewFrame(resultFrame, resource);
-              ((AbstractStruct)resource).getViewer().selectEntry((String)table.getValueAt(row, 1));
+              ((AbstractStruct)resource).getViewer().selectEntry(((Item) table.getValueAt(row, 2)).getName());
             }
           }
         }
@@ -159,7 +209,7 @@ public final class CreInvChecker implements Runnable, ActionListener, ListSelect
 
 // --------------------- End Interface Runnable ---------------------
 
-  private void checkCreature(CreResource cre)
+  private void checkCreatureInventory(CreResource cre)
   {
     HexNumber slots_offset = (HexNumber)cre.getAttribute("Item slots offset");
     items.clear();
@@ -182,9 +232,40 @@ public final class CreInvChecker implements Runnable, ActionListener, ListSelect
     for (int i = 0; i < items.size(); i++) {
       if (items.get(i) != slots_offset) {
         Item item = (Item)items.get(i);
-        table.addTableItem(new CreInvError(cre.getResourceEntry(), item));
+        table.addTableItem(new CreInvError(cre.getResourceEntry(), item, "Item not in inventory"));
       }
     }
+  }
+
+  private void checkItemAttribute(CreResource cre)
+  {
+	  List<StructEntry> list = cre.getList();
+	  for (int i = 0; i < list.size(); i++)
+		  if (list.get(i) instanceof Item)
+		  {
+			  Item item = (Item) list.get(i);
+			  if (((ResourceRef) item.getAttribute("Item")).getResourceName().equalsIgnoreCase("None.ITM"))
+			  {
+				  table.addTableItem(new CreInvError(cre.getResourceEntry(), item, 
+						  "Empty item ref"));
+				  continue;
+			  }
+		      
+			  StructEntry wear = item.getAttribute("Wear");
+			  if (((DecNumber) wear).getValue() != 0)
+			  {
+				  table.addTableItem(new CreInvError(cre.getResourceEntry(), item, 
+						  "Wear is: " + ((DecNumber) wear).getValue()));
+			  }
+
+			  for (int j = 4; j < 8*((Flag) item.getAttribute("Flags")).getSize(); j++)
+				  if (((Flag) item.getAttribute("Flags")).isFlagSet(j))
+				  {
+					  table.addTableItem(new CreInvError(cre.getResourceEntry(), item, 
+							  "Item flag is: " + item.getAttribute("Flags").toString()));
+					  break;
+				  }
+		  }
   }
 
 // -------------------------- INNER CLASSES --------------------------
@@ -193,11 +274,13 @@ public final class CreInvChecker implements Runnable, ActionListener, ListSelect
   {
     private final ResourceEntry resourceEntry;
     private final Item itemRef;
+	private final String message;
 
-    private CreInvError(ResourceEntry resourceEntry, Item itemRef)
+    private CreInvError(ResourceEntry resourceEntry, Item itemRef, String message)
     {
       this.resourceEntry = resourceEntry;
       this.itemRef = itemRef;
+      this.message = message;
     }
 
     public Object getObjectAt(int columnIndex)
@@ -206,8 +289,10 @@ public final class CreInvChecker implements Runnable, ActionListener, ListSelect
         return resourceEntry;
       else if (columnIndex == 1)
         return resourceEntry.getSearchString();
-      else
+      else if (columnIndex == 2)
         return itemRef;
+      else
+    	return message;
     }
   }
 }

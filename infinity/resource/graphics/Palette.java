@@ -6,7 +6,7 @@ package infinity.resource.graphics;
 
 import infinity.util.Byteconvert;
 
-final class Palette
+public final class Palette
 {
   private final int[] colors;
 
@@ -41,6 +41,14 @@ final class Palette
         shorts[i] += (short)256;
     }
     return shorts;
+  }
+  
+  public int getIndex(int color)
+  {
+	for (int i = 0; i < colors.length; i++)
+	  if (color == colors[i])
+		  return i;
+	return 0;
   }
 }
 
