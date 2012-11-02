@@ -160,8 +160,6 @@ public final class WorldMapChecker implements Runnable, ListSelectionListener, A
 		AreaEntry aEntry;
 		AreaEntry[] aCache;
 		String aName;
-		ResourceRef rref;
-
 		List<StructEntry> aList = ((AbstractStruct) mapEntry).getList();
 		aCache = new AreaEntry[((SectionCount) ((AbstractStruct) mapEntry).getAttribute("# areas")).getValue()];
 

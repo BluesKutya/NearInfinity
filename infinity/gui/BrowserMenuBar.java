@@ -825,6 +825,7 @@ public final class BrowserMenuBar extends JMenuBar
     private final JMenuItem toolCheckIDSRef, toolCheckIDSBCSRef, toolCheckScripts, toolCheckStructs;
     private final JMenuItem toolCheckStringUse, toolCheckFileUse, toolMassExport;
     private final JMenuItem toolCheckEffectsIndex, toolCheckArea, toolCheckWorldMap;
+    private final JMenuItem toolCheckStore;
 //    private JMenuItem toolBatchJob;
     private final JCheckBoxMenuItem toolConsole, toolClipBoard;
 
@@ -849,6 +850,9 @@ public final class BrowserMenuBar extends JMenuBar
 
       toolCheckWorldMap = makeMenuItem("Check WorldMap", -1, Icons.getIcon("Refresh16.gif"), -1, this);
       add(toolCheckWorldMap);
+
+      toolCheckStore = makeMenuItem("Check Store", -1, Icons.getIcon("Refresh16.gif"), -1, this);
+      add(toolCheckStore);
 
       JMenu checkMenu = new JMenu("Check Triggers & Actions For");
       checkMenu.setIcon(Icons.getIcon("Refresh16.gif"));
@@ -1040,6 +1044,8 @@ public final class BrowserMenuBar extends JMenuBar
         new AreaChecker(NearInfinity.getInstance());
       else if (event.getSource() == toolCheckWorldMap)
         new WorldMapChecker();
+      else if (event.getSource() == toolCheckStore)
+          new StoreChecker();
     }
   }
 

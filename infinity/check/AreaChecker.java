@@ -195,7 +195,16 @@ public final class AreaChecker implements Runnable, ListSelectionListener, Actio
 					}
 
 					if (typeButtons[2].isSelected() && list.get(j) instanceof Container)
+					{
+						ResourceRef keyRes = (ResourceRef) ((AbstractStruct) list.get(j)).getAttribute("Key");
+						if (!keyRes.getResourceName().equalsIgnoreCase("None.ITM") &&
+								!ResourceFactory.getInstance().resourceExists(keyRes.getResourceName()))
+						{
+							errorTable.addTableItem(new AreaTableLine(entry, list.get(j), 
+									"Non existent key item for container: " + keyRes.getResourceName()));
+						}
 						checkContainedItem(entry, list.get(j));
+					}
 				}
 			}
 			catch (Exception e)
@@ -366,10 +375,18 @@ public final class AreaChecker implements Runnable, ListSelectionListener, Actio
 			if (cont_list.get(i) instanceof Item)
 			{
 				Item item = (Item) cont_list.get(i);
+
+				ResourceRef itemRes = (ResourceRef) item.getAttribute("Item");
+				if (!ResourceFactory.getInstance().resourceExists(itemRes.getResourceName()))
+				{
+					errorTable.addTableItem(new AreaTableLine(entry, container, 
+							"Non existent item in container: " + itemRes.getResourceName()));
+				}
+
 				StructEntry wear = item.getAttribute("Wear");
 				if (((DecNumber) wear).getValue() != 0)
 				{
-					errorTable.addTableItem(new AreaTableLine(entry, item, 
+					errorTable.addTableItem(new AreaTableLine(entry, container, 
 							"Wear is: " + ((DecNumber) wear).getValue()));
 				}
 

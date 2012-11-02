@@ -256,5 +256,34 @@ public final class PlainTextResource implements TextResource, Writeable, ActionL
       strings.add(st.nextToken().toUpperCase());
     return strings;
   }
+  
+  public String[][] extract2DA()
+  {
+	  int i = 0;
+	  StringTokenizer st = new StringTokenizer(getText(), "\n");
+	  st.nextToken();
+	  st.nextToken();
+	  String res[][] = new String[st.countTokens()][];
+	  while (st.hasMoreTokens())
+		  res[i++] = parseString(st.nextToken());
+	  return res;
+  }
+
+  private String[] parseString(String nextToken)
+  {
+	  int i = 0;
+	  
+	  if (!nextToken.isEmpty() && (nextToken.charAt(0) == ' ' || nextToken.charAt(0) == '\t'))
+		  i++;
+
+	  StringTokenizer st = new StringTokenizer(nextToken);
+	  String res[] = new String[st.countTokens() + i];
+
+	  if (i != 0) res[0] = "";
+
+	  while (st.hasMoreTokens())
+		  res[i++] = st.nextToken();
+	  return res;
+  }
 }
 

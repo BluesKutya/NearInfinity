@@ -8,7 +8,7 @@ import infinity.datatype.*;
 import infinity.resource.AbstractStruct;
 import infinity.resource.AddRemovable;
 
-final class Drink extends AbstractStruct implements AddRemovable
+public final class Drink extends AbstractStruct implements AddRemovable
 {
   Drink() throws Exception
   {
@@ -22,7 +22,7 @@ final class Drink extends AbstractStruct implements AddRemovable
 
   protected int read(byte buffer[], int offset) throws Exception
   {
-    list.add(new Unknown(buffer, offset, 8));
+    list.add(new ResourceRef(buffer, offset, "Rumor", "DLG"));
     list.add(new StringRef(buffer, offset + 8, "Drink name"));
     list.add(new DecNumber(buffer, offset + 12, 4, "Price"));
     list.add(new DecNumber(buffer, offset + 16, 4, "Rumor rate"));
