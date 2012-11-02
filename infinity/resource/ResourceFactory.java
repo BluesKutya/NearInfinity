@@ -111,7 +111,12 @@ public final class ResourceFactory
     return keyfile;
   }
 
-  synchronized public static Resource getResource(ResourceEntry entry)
+  public static Resource getResource(ResourceEntry entry)
+  {
+	  return getResource(entry, true);
+  }
+
+  synchronized public static Resource getResource(ResourceEntry entry, Boolean cache)
   {
     Resource res = null;
     try {
@@ -215,7 +220,7 @@ public final class ResourceFactory
         	if (res == null)
         	{
         		res = new PlainTextResource(entry);
-        		resourceCache.put(entry, res);
+        		if (cache) resourceCache.put(entry, res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("MVE"))
@@ -239,7 +244,7 @@ public final class ResourceFactory
         	if (res == null)
         	{
         		res = new DlgResource(entry);
-        		resourceCache.put(entry, res);
+        		if (cache) resourceCache.put(entry, res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("SPL"))
@@ -257,7 +262,7 @@ public final class ResourceFactory
         	if (res == null)
         	{
                 res = new CreResource(entry);
-        		resourceCache.put(entry, res);
+                if (cache) resourceCache.put(entry, res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("ARE"))
@@ -266,7 +271,7 @@ public final class ResourceFactory
         	if (res == null)
         	{
         		res = new AreResource(entry);
-        		resourceCache.put(entry, res);
+        		if (cache) resourceCache.put(entry, res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("WFX"))

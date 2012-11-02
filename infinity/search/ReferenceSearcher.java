@@ -85,7 +85,7 @@ public final class ReferenceSearcher extends AbstractReferenceSearcher
     List entries = savfile.getFileHandler().getFileEntries();
     for (int i = 0; i < entries.size(); i++) {
       ResourceEntry saventry = (ResourceEntry)entries.get(i);
-      Resource resource = ResourceFactory.getResource(saventry);
+      Resource resource = ResourceFactory.getResource(saventry, false);
       if (resource instanceof AbstractStruct)
         searchSavStruct(entry, saventry, (AbstractStruct)resource);
     }
