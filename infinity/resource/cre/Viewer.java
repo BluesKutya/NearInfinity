@@ -8,6 +8,8 @@ import infinity.datatype.Flag;
 import infinity.datatype.ResourceRef;
 import infinity.gui.ViewerUtil;
 import infinity.resource.*;
+import infinity.resource.key.ResourceEntry;
+import infinity.resource.other.PlainTextResource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +28,7 @@ public final class Viewer extends JPanel
     ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Race"), gbl, gbc, true);
     ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Class"), gbl, gbc, true);
     ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Gender"), gbl, gbc, true);
+    ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Alignment"), gbl, gbc, true);
     if (ResourceFactory.getInstance().resourceExists("KIT.IDS"))
       ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Kit"), gbl, gbc, true);
     else
@@ -150,15 +153,15 @@ public final class Viewer extends JPanel
       effectPanel = ViewerUtil.makeListPanel("Effects", cre, Effect2.class, "Type");
     else
       effectPanel = ViewerUtil.makeListPanel("Effects", cre, Effect.class, "Type");
-    ResourceRef imageRef = (ResourceRef)cre.getAttribute("Large portrait");
-    JComponent imagePanel;
+//    ResourceRef imageRef = (ResourceRef)cre.getAttribute("Large portrait");
+    JComponent bigImagePanel, smalImagePanel;
 //    if (imageRef.getResourceName().endsWith(".BAM"))
 //      imagePanel = ViewerUtil.makeBamPanel(imageRef, 0);
-    if (imageRef.getResourceName().endsWith(".BMP") &&
-        ResourceFactory.getInstance().resourceExists(imageRef.getResourceName()))
-      imagePanel = ViewerUtil.makeImagePanel(imageRef);
-    else
-      imagePanel = ViewerUtil.makeImagePanel((ResourceRef)cre.getAttribute("Small portrait"));
+//    if (imageRef.getResourceName().endsWith(".BMP") &&
+//        ResourceFactory.getInstance().resourceExists(imageRef.getResourceName()))
+    bigImagePanel = ViewerUtil.makeImagePanel((ResourceRef)cre.getAttribute("Large portrait"));
+//    else
+    smalImagePanel = ViewerUtil.makeImagePanel((ResourceRef)cre.getAttribute("Small portrait"));
 
     GridBagLayout gbl = new GridBagLayout();
     GridBagConstraints gbc = new GridBagConstraints();
@@ -167,9 +170,12 @@ public final class Viewer extends JPanel
     gbc.insets = new Insets(3, 0, 3, 0);
     gbc.weightx = 1.0;
     gbc.weighty = 0.0;
+    gbl.setConstraints(bigImagePanel, gbc);
+    leftPanel.add(bigImagePanel);
     gbc.gridwidth = GridBagConstraints.REMAINDER;
-    gbl.setConstraints(imagePanel, gbc);
-    leftPanel.add(imagePanel);
+    gbl.setConstraints(smalImagePanel, gbc);
+    leftPanel.add(smalImagePanel);
+    gbc.weightx = 0.0;
     gbc.weighty = 1.0;
     gbl.setConstraints(effectPanel, gbc);
     leftPanel.add(effectPanel);
@@ -302,7 +308,80 @@ public final class Viewer extends JPanel
     ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("General script"), gbl, gbc, true);
     ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Default script"), gbl, gbc, true);
     ViewerUtil.addLabelFieldPair(panel, cre.getAttribute("Dialogue"), gbl, gbc, true);
+// NPC Dialog
+	ResourceEntry npcdialogRef = ResourceFactory.getInstance().getResourceEntry("PDIALOG.2DA");
+	if (npcdialogRef != null)
+	{
+		int join = 0;
+		int post = 0;
+		int joinToB = 0;
+		int postToB = 0;
+		String npc_dialog[][] = ((PlainTextResource) ResourceFactory.getResource(npcdialogRef)).extract2DA();
 
+		for (int i = 1; i < npc_dialog[0].length; i++)
+		{
+			if (npc_dialog[0][i].equalsIgnoreCase("JOIN_DIALOG_FILE"))
+				join = i;
+			if (npc_dialog[0][i].equalsIgnoreCase("POST_DIALOG_FILE"))
+				post = i;
+			if (npc_dialog[0][i].equalsIgnoreCase("25JOIN_DIALOG_FILE"))
+				joinToB = i;
+			if (npc_dialog[0][i].equalsIgnoreCase("25POST_DIALOG_FILE"))
+				postToB = i;
+		}
+		for (int i = 1; i < npc_dialog.length; i++)
+			if (npc_dialog[i][0].equalsIgnoreCase(cre.getAttribute("Script name").toString()))
+			{
+				if (joinToB != 0 && (npc_dialog[i].length <= joinToB || npc_dialog[i][joinToB].equalsIgnoreCase("***")))
+					joinToB = 0;
+				if (postToB != 0 && (npc_dialog[i].length <= postToB || npc_dialog[i][postToB].equalsIgnoreCase("***")))
+					postToB = 0;
+
+				if (join != 0 && npc_dialog[i].length > join)
+					ViewerUtil.addLabelFieldPair(panel,	new ResourceRef(npc_dialog[i][join].getBytes(), 0,
+							npc_dialog[i][join].length(), "Join dialog", "DLG"), gbl, gbc, joinToB != 0 ? false : true);
+				if (joinToB != 0)
+					ViewerUtil.addLabelFieldPair(panel, new ResourceRef(npc_dialog[i][joinToB].getBytes(), 0,
+							npc_dialog[i][joinToB].length(), "", "DLG"), gbl, gbc, true);
+			    if (post != 0 && npc_dialog[i].length > post)
+			    	ViewerUtil.addLabelFieldPair(panel, new ResourceRef(npc_dialog[i][post].getBytes(), 0, 
+			    			npc_dialog[i][post].length(), "Post dialog", "DLG"), gbl, gbc, postToB != 0 ? false : true);
+			    if (postToB != 0)
+			    	ViewerUtil.addLabelFieldPair(panel, new ResourceRef(npc_dialog[i][postToB].getBytes(), 0,
+			    			npc_dialog[i][postToB].length(), "", "DLG"), gbl, gbc, true);
+			}
+	}
+	// NPC Banter
+	ResourceEntry npcbanterRef = ResourceFactory.getInstance().getResourceEntry("INTERDIA.2DA");
+	if (npcbanterRef != null)
+	{
+		int ban = 0;
+		int banToB = 0;
+		String npc_banter[][] = ((PlainTextResource) ResourceFactory.getResource(npcbanterRef)).extract2DA();
+
+		for (int i = 1; i < npc_banter[0].length; i++)
+		{
+			if (npc_banter[0][i].equalsIgnoreCase("FILE"))
+				ban = i;
+			if (npc_banter[0][i].equalsIgnoreCase("25FILE"))
+				banToB = i;
+		}
+		for (int i = 1; i < npc_banter.length; i++)
+			if (npc_banter[i][0].equalsIgnoreCase(cre.getAttribute("Script name").toString()))
+			{
+				if (banToB != 0 && ( npc_banter[i].length <= banToB ||
+						npc_banter[i][banToB].equalsIgnoreCase("***") ||
+						npc_banter[i][banToB].equalsIgnoreCase("NONE")))
+					banToB = 0;
+
+				if (ban != 0)
+					ViewerUtil.addLabelFieldPair(panel,	new ResourceRef(npc_banter[i][ban].getBytes(), 0,
+							npc_banter[i][ban].length(), "Banter", "DLG"), gbl, gbc, banToB != 0 ? false : true);
+				if (banToB != 0)
+					ViewerUtil.addLabelFieldPair(panel, new ResourceRef(npc_banter[i][banToB].getBytes(), 0,
+							npc_banter[i][banToB].length(), "", "DLG"), gbl, gbc, true);
+			}
+	}
     return panel;
   }
 

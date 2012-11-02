@@ -82,7 +82,14 @@ public final class ResourceTreeModel implements TreeModel
       if (file.isDirectory())
         addDirectory(folder, file);
       else
+      {
         folder.addResourceEntry(new FileResourceEntry(file));
+        if (directory.getName().equalsIgnoreCase("portraits"))
+        {
+          FileResourceEntry fileEntry = new FileResourceEntry(file, true);
+          entries.put(file.getName().toUpperCase(), fileEntry);
+        }
+      }
     }
   }
 

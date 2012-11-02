@@ -210,7 +210,14 @@ public final class ResourceFactory
                  entry.getExtension().equalsIgnoreCase("INI") ||
                  entry.getExtension().equalsIgnoreCase("TXT") ||
                  (entry.getExtension().equalsIgnoreCase("SRC") && getGameID() == ID_ICEWIND2))
-          res = new PlainTextResource(entry);
+        {
+        	res = resourceCache.get(entry);
+        	if (res == null)
+        	{
+        		res = new PlainTextResource(entry);
+        		resourceCache.put(entry, res);
+        	}
+        }
         else if (entry.getExtension().equalsIgnoreCase("MVE"))
           res = new MveResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("PLT"))
