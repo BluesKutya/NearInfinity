@@ -255,9 +255,24 @@ public final class BamResource implements Resource, ActionListener, ItemListener
     return frames[frameNr].image;
   }
 
+  public Point getFrameCenter(int frameNr)
+  {
+    return new Point(frames[frameNr].xCenter, frames[frameNr].yCenter);
+  }
+  
+  public int getFrameCount(int animNr)
+  {
+	return anims[animNr].frameCount;
+  }
+
   public int getFrameNr(int animNr, int frameNr)
   {
     return lookupTable[frameNr + anims[animNr].lookupIndex];
+  }
+  
+  public int getTransparent()
+  {
+	  return palette.getColor(transparent);
   }
 
   private void showFrame()
@@ -287,13 +302,14 @@ public final class BamResource implements Resource, ActionListener, ItemListener
   private final class Frame
   {
     private BufferedImage image;
+    private int xCenter, yCenter;
 
     private Frame(byte buffer[], int offset)
     {
       int width = (int)Byteconvert.convertShort(buffer, offset);
       int height = (int)Byteconvert.convertShort(buffer, offset + 0x02);
-//      int xcoord = Byteconvert.convertShort(buffer, offset + 0x04);
-//      int ycoord = Byteconvert.convertShort(buffer, offset + 0x06);
+      xCenter = Byteconvert.convertShort(buffer, offset + 0x04);
+      yCenter = Byteconvert.convertShort(buffer, offset + 0x06);
       long frameDataOffset = Byteconvert.convertUnsignedInt(buffer, offset + 0x08);
       boolean rle = true;
       if (frameDataOffset > Math.pow((double)2, (double)31)) {
