@@ -14,7 +14,7 @@ public final class StringResource
 	private static RandomAccessFile file;
 	private static String version;
 	private static int maxnr, startindex;
-	private static Charset charset = Charset.forName("windows-1252");
+	private static Charset charset = Charset.forName("windows-1251");
 
 	public static Charset getCharset() {
 		return charset;

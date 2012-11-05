@@ -277,7 +277,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			    else if (parent instanceof Transition)
 			    {
 			    	trans = (Transition) parent;
-			    	if (trans.getName() == "None" || dlg.getName().compareToIgnoreCase(trans.getNextDialog().getName()) == 0)
+			    	if (trans.getName() == "None" || dlg.getName().equalsIgnoreCase(trans.getNextDialog().getResourceName()))
 			    		return ((DlgResource) trans.getSuperStruct()).getStateList().get(trans.getNextDialogState());
 			    	else
 			    	{
@@ -370,7 +370,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 			    	if (((State) entry).getTriggerIndex() != -1)
 			    		return null;
 			    	else for (Transition trans : dlg.getTransList())
-			    		if (dlg.getName().compareToIgnoreCase(trans.getNextDialog().getName()) == 0 
+			    		if (dlg.getName().equalsIgnoreCase(trans.getNextDialog().getResourceName()) 
 			    		&& trans.getNextDialogState() == ((State) entry).getNumber() && !trans.getFlag().isFlagSet(3))
 			    			return trans;
 			    if (entry instanceof Transition)

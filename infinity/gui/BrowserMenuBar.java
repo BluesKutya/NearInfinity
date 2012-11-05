@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
 
 public final class BrowserMenuBar extends JMenuBar
 {
-  public static final String VERSION = "v1.33 beta 23";
+  public static final String VERSION = "v1.33 beta 24";
   public static final int OVERRIDE_IN_THREE = 0, OVERRIDE_IN_OVERRIDE = 1, OVERRIDE_SPLIT = 2;
   public static final int LOOKFEEL_JAVA = 0, LOOKFEEL_WINDOWS = 1, LOOKFEEL_MOTIF = 2, LOOKFEEL_PLASTICXP = 3;
   public static final int RESREF_ONLY = 0, RESREF_REF_NAME = 1, RESREF_NAME_REF = 2;
@@ -431,10 +431,16 @@ public final class BrowserMenuBar extends JMenuBar
   ///////////////////////////////
   private static final class GameMenu extends JMenu implements ActionListener
   {
-    private final String LASTGAME_IDS[] = {"LastGameID1", "LastGameID2", "LastGameID3", "LastGameID4",
-                                           "LastGameID5"};
-    private final String LASTGAME_PATH[] = {"LastGamePath1", "LastGamePath2", "LastGamePath3", "LastGamePath4",
-                                            "LastGamePath5"};
+    private final String LASTGAME_IDS[] = {"LastGameID1", "LastGameID2", "LastGameID3",
+                                           "LastGameID4", "LastGameID5", "LastGameID6",
+    									   "LastGameID7", "LastGameID8", "LastGameID9",
+    									   "LastGameID10", "LastGameID11", "LastGameID12",
+                                           "LastGameID13", "LastGameID14", "LastGameID15"};
+    private final String LASTGAME_PATH[] = {"LastGamePath1", "LastGamePath2", "LastGamePath3",
+    		                                "LastGamePath4", "LastGamePath5", "LastGamePath6",
+    		                                "LastGamePath7", "LastGamePath8", "LastGamePath9",
+    		                                "LastGamePath10", "LastGamePath11", "LastGamePath12",
+                                            "LastGamePath13", "LastGamePath14", "LastGamePath15"};
     private final JMenuItem gameOpenFile, gameOpenGame, gameRefresh, gameExit, gameCloseTLK;
     private final JMenuItem gameLastGame[] = new JMenuItem[LASTGAME_IDS.length];
     private final List<Integer> lastGameID = new ArrayList<Integer>();
@@ -511,7 +517,7 @@ public final class BrowserMenuBar extends JMenuBar
         lastGameID.add(0, new Integer(oldGame));
         lastGamePath.add(0, oldFile);
       }
-      while (lastGameID.size() > 5) {
+      while (lastGameID.size() > 15) {
         lastGamePath.remove(lastGameID.size() - 1);
         lastGameID.remove(lastGameID.size() - 1);
       }

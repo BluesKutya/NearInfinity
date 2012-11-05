@@ -56,7 +56,7 @@ public final class ResourceFactory
   private File[] biffDirs;
   private JFileChooser fc;
   private ResourceTreeModel treeModel;
-  private static WeakHashMap<ResourceEntry, Resource> resourceCache;
+  private static WeakHashMap<String, Resource> resourceCache;
 
   static
   {
@@ -216,11 +216,11 @@ public final class ResourceFactory
                  entry.getExtension().equalsIgnoreCase("TXT") ||
                  (entry.getExtension().equalsIgnoreCase("SRC") && getGameID() == ID_ICEWIND2))
         {
-        	res = resourceCache.get(entry);
+        	res = resourceCache.get(entry.getResourceName());
         	if (res == null)
         	{
         		res = new PlainTextResource(entry);
-        		if (cache) resourceCache.put(entry, res);
+        		if (cache) resourceCache.put(entry.getResourceName(), res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("MVE"))
@@ -240,11 +240,11 @@ public final class ResourceFactory
           res = new SrcResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("DLG"))
         {
-        	res = resourceCache.get(entry);
+        	res = resourceCache.get(entry.getResourceName());
         	if (res == null)
         	{
         		res = new DlgResource(entry);
-        		if (cache) resourceCache.put(entry, res);
+        		if (cache) resourceCache.put(entry.getResourceName(), res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("SPL"))
@@ -258,20 +258,20 @@ public final class ResourceFactory
         else if (entry.getExtension().equalsIgnoreCase("CRE") ||
                  entry.getExtension().equalsIgnoreCase("CHR"))
         	{
-        	res = resourceCache.get(entry);
+        	res = resourceCache.get(entry.getResourceName());
         	if (res == null)
         	{
                 res = new CreResource(entry);
-                if (cache) resourceCache.put(entry, res);
+                if (cache) resourceCache.put(entry.getResourceName(), res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("ARE"))
         {
-        	res = resourceCache.get(entry);
+        	res = resourceCache.get(entry.getResourceName());
         	if (res == null)
         	{
         		res = new AreResource(entry);
-        		if (cache) resourceCache.put(entry, res);
+        		if (cache) resourceCache.put(entry.getResourceName(), res);
         	}
         }
         else if (entry.getExtension().equalsIgnoreCase("WFX"))
@@ -313,7 +313,7 @@ public final class ResourceFactory
   public ResourceFactory(File file)
   {
 	if (resourceCache == null)
-		resourceCache = new WeakHashMap<ResourceEntry, Resource>();
+		resourceCache = new WeakHashMap<String, Resource>();
 	else
 		resourceCache.clear();
     rootDir = file.getAbsoluteFile().getParentFile();
@@ -678,6 +678,8 @@ public final class ResourceFactory
         Kit2daBitmap.resetKitlist();
       else if (resource.getResourceEntry().toString().equalsIgnoreCase("SONGLIST.2DA"))
         Song2daBitmap.resetSonglist();
+      else if (resourceCache.containsKey(resource.getResourceEntry().getResourceName()))
+    	resourceCache.remove(resource.getResourceEntry().getResourceName());
     } catch (IOException e) {
       JOptionPane.showMessageDialog(parent, "Error while saving " + resource.getResourceEntry().toString(),
                                     "Error", JOptionPane.ERROR_MESSAGE);
