@@ -105,15 +105,15 @@ public final class ViewerMap extends JPanel implements ListSelectionListener
 
   private Boolean drawName(Graphics2D graph, FontMetrics fm, StructEntry areaEntry, String attrName, int iX, int iY, int iW, int iH, Point center, int pile, StructEntry prevArea)
   {
-	  if (((StringRef) ((AbstractStruct) areaEntry).getAttribute(attrName)).getValue() != -1)
+	  StringRef nameRef = (StringRef) ((AbstractStruct) areaEntry).getAttribute(attrName);
+	  if (nameRef.getValue() > 0)
 	  {
 		  if (prevArea != null &&
-				  ((StringRef) ((AbstractStruct) prevArea).getAttribute(attrName)).getValue() == 
-				  ((StringRef) ((AbstractStruct) areaEntry).getAttribute(attrName)).getValue())
+				  ((StringRef) ((AbstractStruct) prevArea).getAttribute(attrName)).getValue() == nameRef.getValue())
 		  {
 			  return true;
 		  }
-		  String name = ((StringRef) ((AbstractStruct) areaEntry).getAttribute(attrName)).toString();
+		  String name = nameRef.toString();
 		  this.drawString(graph, name, iX + iW / 2 - center.x - fm.stringWidth(name) / 2,
 				  iY + iH - center.y + fm.getAscent() * (pile + 1), Color.BLACK, Color.WHITE);
 		  return true;
@@ -262,6 +262,8 @@ public final class ViewerMap extends JPanel implements ListSelectionListener
           {
         	  File output = fc.getSelectedFile();
         	  FileNameExtensionFilter fFilter = (FileNameExtensionFilter) fc.getFileFilter();
+        	  if (!output.getName().endsWith("." + fFilter.getExtensions()[0]))
+        		  output = new File(output.getAbsolutePath() + "." + fFilter.getExtensions()[0]);
         	  try {
         		  ImageIO.write(map, fFilter.getExtensions()[0], output);
         	  } catch (IOException e) {

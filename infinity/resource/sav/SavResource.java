@@ -71,7 +71,7 @@ public final class SavResource implements Resource, ActionListener, Closeable, W
     }
     else if (event.getSource() == bedit) {
       ResourceEntry fileentry = (ResourceEntry)entries.get(filelist.getSelectedIndex());
-      Resource res = ResourceFactory.getResource(fileentry);
+      Resource res = ResourceFactory.getResource(fileentry, false);
       new ViewFrame(panel.getTopLevelAncestor(), res);
     }
     else if (event.getSource() == bexport)
@@ -131,7 +131,7 @@ public final class SavResource implements Resource, ActionListener, Closeable, W
       {
         if (event.getClickCount() == 2) {
           ResourceEntry fileentry = (ResourceEntry)entries.get(filelist.getSelectedIndex());
-          Resource res = ResourceFactory.getResource(fileentry);
+          Resource res = ResourceFactory.getResource(fileentry, false);
           new ViewFrame(panel.getTopLevelAncestor(), res);
         }
       }

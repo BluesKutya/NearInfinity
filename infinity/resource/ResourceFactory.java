@@ -216,12 +216,17 @@ public final class ResourceFactory
                  entry.getExtension().equalsIgnoreCase("TXT") ||
                  (entry.getExtension().equalsIgnoreCase("SRC") && getGameID() == ID_ICEWIND2))
         {
-        	res = resourceCache.get(entry.getResourceName());
-        	if (res == null)
+        	if (cache)
         	{
-        		res = new PlainTextResource(entry);
-        		if (cache) resourceCache.put(entry.getResourceName(), res);
+        		res = resourceCache.get(entry.getResourceName());
+        		if (res == null)
+        		{
+        			res = new PlainTextResource(entry);
+        			resourceCache.put(entry.getResourceName(), res);
+        		}
         	}
+        	else
+        		res = new PlainTextResource(entry);
         }
         else if (entry.getExtension().equalsIgnoreCase("MVE"))
           res = new MveResource(entry);
@@ -240,12 +245,17 @@ public final class ResourceFactory
           res = new SrcResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("DLG"))
         {
-        	res = resourceCache.get(entry.getResourceName());
-        	if (res == null)
+        	if (cache)
         	{
-        		res = new DlgResource(entry);
-        		if (cache) resourceCache.put(entry.getResourceName(), res);
+        		res = resourceCache.get(entry.getResourceName());
+        		if (res == null)
+        		{
+        			res = new DlgResource(entry);
+        			resourceCache.put(entry.getResourceName(), res);
+        		}
         	}
+        	else
+        		res = new DlgResource(entry);
         }
         else if (entry.getExtension().equalsIgnoreCase("SPL"))
           res = new SplResource(entry);
@@ -257,22 +267,32 @@ public final class ResourceFactory
           res = new ChuResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("CRE") ||
                  entry.getExtension().equalsIgnoreCase("CHR"))
+        {
+        	if (cache)
         	{
-        	res = resourceCache.get(entry.getResourceName());
-        	if (res == null)
-        	{
-                res = new CreResource(entry);
-                if (cache) resourceCache.put(entry.getResourceName(), res);
+        		res = resourceCache.get(entry.getResourceName());
+        		if (res == null)
+        		{
+        			res = new CreResource(entry);
+        			resourceCache.put(entry.getResourceName(), res);
+        		}
         	}
+        	else
+        		res = new CreResource(entry);
         }
         else if (entry.getExtension().equalsIgnoreCase("ARE"))
         {
-        	res = resourceCache.get(entry.getResourceName());
-        	if (res == null)
+        	if (cache)
         	{
-        		res = new AreResource(entry);
-        		if (cache) resourceCache.put(entry.getResourceName(), res);
+        		res = resourceCache.get(entry.getResourceName());
+        		if (res == null)
+        		{
+        			res = new AreResource(entry);
+        			resourceCache.put(entry.getResourceName(), res);
+        		}
         	}
+        	else
+        		res = new AreResource(entry);
         }
         else if (entry.getExtension().equalsIgnoreCase("WFX"))
           res = new WfxResource(entry);
