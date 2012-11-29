@@ -9,7 +9,10 @@ import infinity.resource.*;
 import infinity.resource.are.*;
 import infinity.resource.are.Container;
 import infinity.resource.bcs.BcsResource;
+import infinity.resource.bcs.Compiler;
+import infinity.resource.bcs.Decompiler;
 import infinity.resource.cre.CreResource;
+import infinity.resource.dlg.*;
 import infinity.resource.key.ResourceEntry;
 
 import java.awt.*;
@@ -23,7 +26,7 @@ public final class ScriptReferenceSearcher extends AbstractReferenceSearcher
 
   public ScriptReferenceSearcher(ResourceEntry targetEntry, Component parent)
   {
-    super(targetEntry, new String[]{"ARE", "BCS", "CHR", "CRE"}, parent);
+    super(targetEntry, new String[]{"ARE", "BCS", "CHR", "CRE", "DLG"}, parent);
     this.targetResRef = targetEntry.getResourceName().substring(0,
                           targetEntry.getResourceName().indexOf('.'));
     this.cutscene = Pattern.compile("StartCutScene(\""
@@ -39,6 +42,33 @@ public final class ScriptReferenceSearcher extends AbstractReferenceSearcher
         addHit(entry, null, null);
       }
     }
+    else if (resource instanceof DlgResource)
+    {
+     	String strCode = null;
+    	for (StructEntry searchEntry : ((DlgResource) resource).getActionList())
+    	{
+    		try
+    		{
+    			String code = Compiler.getInstance().compileDialogCode(searchEntry.toString(),
+    					searchEntry instanceof Action);
+    			if (Compiler.getInstance().getErrors().size() == 0)
+    				strCode = Decompiler.decompileDialogAction(code, false);
+    			else
+    				System.out.println("Error(s) compiling " + ((AbstractStruct) resource).getName() + " - " + searchEntry.getName());
+    		}
+    		catch (Exception e)
+    		{
+    			System.out.println("Exception (de)compiling " + ((AbstractStruct) resource).getName() + " - " + searchEntry.getName());
+    			e.printStackTrace();
+    		}
+
+    		if (strCode == null)
+    			strCode = "";
+
+    		if (cutscene.matcher(strCode).find())
+    			addHit(entry, null, null);
+    	}
+   }
     else {
       searchStruct(entry, (AbstractStruct)resource);
     }
