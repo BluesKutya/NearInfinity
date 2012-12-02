@@ -47,6 +47,7 @@ public final class ResourceFactory
   public static final int ID_UNKNOWNGAME = 0, ID_BG1 = 1, ID_BG1TOTSC = 2, ID_TORMENT = 3, ID_ICEWIND = 4;
   public static final int ID_ICEWINDHOW = 5, ID_ICEWINDHOWTOT = 6, ID_BG2 = 7, ID_BG2TOB = 8, ID_NWN = 9;
   public static final int ID_ICEWIND2 = 10, ID_KOTOR = 11, ID_TUTU = 12, ID_DEMO = 13, ID_KOTOR2 = 14;
+  public static final int ID_BGEE = 15;
   private static File rootDir;
   private static final GameConfig[] games;
   private static Keyfile keyfile;
@@ -64,7 +65,7 @@ public final class ResourceFactory
                        "Scripts", "ScrnShot", "Sounds", "Temp", "TempSave"};
 //    String iwddirs[] = {"Music", "Characters", "Scripts", "Sounds", "Temp", "MPSave"};
 
-    games = new GameConfig[15];
+    games = new GameConfig[16];
     games[ID_UNKNOWNGAME] = new GameConfig("Unknown game", "baldur.ini", bgdirs);
     games[ID_BG1] = new GameConfig("Baldur's Gate", "baldur.ini", bgdirs);
     games[ID_BG1TOTSC] = new GameConfig("Baldur's Gate - Tales of the Sword Coast", "baldur.ini", bgdirs);
@@ -89,6 +90,10 @@ public final class ResourceFactory
     games[ID_KOTOR2] = new GameConfig("Star Wars: Knights of the Old Republic 2", "swkotor2.ini",
                                      new String[]{"Lips", "Modules", "Rims", "Saves", "StreamMusic",
                                      "StreamSounds", "TexturePacks"});
+    games[ID_BGEE] = new GameConfig("Baldur's Gate - Enhanced Edition", "",
+            new String[] { "Movies", "Music", "Scripts", "Sounds",
+    		"$HOME$Characters", "$HOME$MPSave", "$HOME$Portraits", "$HOME$Save",
+            "$HOME$ScrnShot", "$HOME$Temp", "$HOME$TempSave"});
   }
 
   public static int getGameID()
@@ -131,8 +136,13 @@ public final class ResourceFactory
                  entry.getExtension().equalsIgnoreCase("BMU"))
           res = new WavResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("PLT"))
-          res = new PltResource(entry);
-        else if (entry.getExtension().equalsIgnoreCase("2DA") &&
+			try {
+				res = new PltResource(entry);
+			} catch (Throwable e) {
+				if (e.getMessage() == "BAM")
+					res = new BamResource(entry);
+			}
+		else if (entry.getExtension().equalsIgnoreCase("2DA") &&
                  (getGameID() == ID_KOTOR || getGameID() == ID_KOTOR2))
           res = new TableTextResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("INI") ||
@@ -149,8 +159,13 @@ public final class ResourceFactory
                  entry.getExtension().equalsIgnoreCase("TXT"))
           res = new PlainTextResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("PLT"))
-          res = new PltResource(entry);
-        else if (entry.getExtension().equalsIgnoreCase("ARE") ||
+			try {
+				res = new PltResource(entry);
+			} catch (Throwable e) {
+				if (e.getMessage() == "BAM")
+					res = new BamResource(entry);
+			}
+		else if (entry.getExtension().equalsIgnoreCase("ARE") ||
                  entry.getExtension().equalsIgnoreCase("IFO") ||
                  entry.getExtension().equalsIgnoreCase("BIC") ||
                  entry.getExtension().equalsIgnoreCase("GIT") ||
@@ -231,8 +246,13 @@ public final class ResourceFactory
         else if (entry.getExtension().equalsIgnoreCase("MVE"))
           res = new MveResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("PLT"))
-          res = new PltResource(entry);
-        else if (entry.getExtension().equalsIgnoreCase("BCS") ||
+			try {
+				res = new PltResource(entry);
+			} catch (Throwable e) {
+				if (e.getMessage() == "BAM")
+					res = new BamResource(entry);
+			}
+		else if (entry.getExtension().equalsIgnoreCase("BCS") ||
                  entry.getExtension().equalsIgnoreCase("BS"))
           res = new BcsResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("ITM"))
@@ -308,6 +328,8 @@ public final class ResourceFactory
           res = new VarResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("BAF"))
           res = new BafResource(entry);
+        else if (entry.getExtension().equalsIgnoreCase("PVR"))
+            res = new PvrResource(entry);
         else
           res = new UnknownResource(entry);
       }
@@ -363,8 +385,8 @@ public final class ResourceFactory
       currentGame = ID_TUTU;
     else if (new File(rootDir, "baldur.exe").exists() && new File(rootDir, "chitin.ini").exists())
       currentGame = ID_DEMO;
-    else if (new File(rootDir, "Baldur.exe").exists() && new File(rootDir, "movies/TSRLOGO.wbm").exists())
-   	  currentGame = ID_BG2TOB;  // Placeholder for BGEE - so far we can get by with ToB configuration
+    else if (new File(rootDir, "Baldur.exe").exists() && new File(rootDir, "data/OH1000.Bif").exists())
+   	  currentGame = ID_BGEE;  // Placeholder for BGEE - so far we can get by with ToB configuration
 
     keyfile = new Keyfile(file, currentGame);
     factory = this;
@@ -392,47 +414,50 @@ public final class ResourceFactory
       if (currentGame == ID_BG1 && resourceExists("DURLAG.MVE"))
         currentGame = ID_BG1TOTSC;
 
-      File iniFile = new File(rootDir, games[currentGame].inifile);
-      List<File> dirList = new ArrayList<File>();
-      try {
-        BufferedReader br = new BufferedReader(new FileReader(iniFile));
-        String line = br.readLine();
-        while (line != null) {
-          if (line.length() > 5 && line.substring(3, 5).equals(":=")) {
-            line = line.substring(5);
-            int index = line.indexOf((int)';');
-            if (index != -1)
-              line = line.substring(0, index);
-            if (line.endsWith(":"))
-              line = line.replace(':', '/');
-            File dir;
-            // Try to handle Mac relative paths
-            if (line.startsWith("/"))
-              dir = new File(rootDir + line);
-            else
-              dir = new File(line);
-            if (dir.exists())
-              dirList.add(dir);
-          }
-          line = br.readLine();
-        }
-        br.close();
-      } catch (Exception e) {
-        e.printStackTrace();
-        dirList.clear();
+      if (games[currentGame].inifile != "")
+      {
+    	  File iniFile = new File(rootDir, games[currentGame].inifile);
+    	  List<File> dirList = new ArrayList<File>();
+    	  try {
+    		  BufferedReader br = new BufferedReader(new FileReader(iniFile));
+    		  String line = br.readLine();
+    		  while (line != null) {
+    			  if (line.length() > 5 && line.substring(3, 5).equals(":=")) {
+    				  line = line.substring(5);
+    				  int index = line.indexOf((int)';');
+    				  if (index != -1)
+    					  line = line.substring(0, index);
+    				  if (line.endsWith(":"))
+    					  line = line.replace(':', '/');
+    				  File dir;
+    				  // Try to handle Mac relative paths
+    				  if (line.startsWith("/"))
+    					  dir = new File(rootDir + line);
+    				  else
+    					  dir = new File(line);
+    				  if (dir.exists())
+    					  dirList.add(dir);
+    			  }
+    			  line = br.readLine();
+    		  }
+    		  br.close();
+    	  } catch (Exception e) {
+    		  e.printStackTrace();
+    		  dirList.clear();
+    	  }
+    	  if (dirList.size() == 0) {
+    		  // Don't panic if an .ini-file cannot be found or contains errors
+    		  dirList.add(new File(rootDir, "CD1"));
+    		  dirList.add(new File(rootDir, "CD2"));
+    		  dirList.add(new File(rootDir, "CD3"));
+    		  dirList.add(new File(rootDir, "CD4"));
+    		  dirList.add(new File(rootDir, "CD5"));
+    		  dirList.add(new File(rootDir, "CD6"));
+    	  }
+    	  biffDirs = new File[dirList.size()];
+    	  for (int i = 0; i < dirList.size(); i++)
+    		  biffDirs[i] = dirList.get(i);
       }
-      if (dirList.size() == 0) {
-        // Don't panic if an .ini-file cannot be found or contains errors
-        dirList.add(new File(rootDir, "CD1"));
-        dirList.add(new File(rootDir, "CD2"));
-        dirList.add(new File(rootDir, "CD3"));
-        dirList.add(new File(rootDir, "CD4"));
-        dirList.add(new File(rootDir, "CD5"));
-        dirList.add(new File(rootDir, "CD6"));
-      }
-      biffDirs = new File[dirList.size()];
-      for (int i = 0; i < dirList.size(); i++)
-        biffDirs[i] = dirList.get(i);
     } catch (Exception e) {
       JOptionPane.showMessageDialog(null, "No Infinity Engine game found", "Error",
                                     JOptionPane.ERROR_MESSAGE);
@@ -568,7 +593,11 @@ public final class ResourceFactory
 
     // Add other resources
     for (final String extraDir : games[currentGame].extraDirs) {
-      File directory = new File(rootDir, extraDir);
+      File directory;
+      if (extraDir.startsWith("$HOME$"))
+        directory = new File(System.getProperty("user.home") + "/Documents/Baldur's Gate - Enhanced Edition", extraDir.substring(6));
+      else
+        directory = new File(rootDir, extraDir);
       if (directory.exists())
         treeModel.addDirectory((ResourceTreeFolder)treeModel.getRoot(), directory);
     }

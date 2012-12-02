@@ -27,7 +27,8 @@ public final class AreResourceRef extends ResourceRef
     if (res instanceof BIFFResourceEntry)
       wedBIFF = ((BIFFResourceEntry)res).getBIFFEntry().toString();
     int gameID = ResourceFactory.getGameID();
-    if (gameID == ResourceFactory.ID_BG1 || gameID == ResourceFactory.ID_BG1TOTSC)
+    if (gameID == ResourceFactory.ID_BG1 || gameID == ResourceFactory.ID_BG1TOTSC ||
+    		 gameID == ResourceFactory.ID_BGEE)
       legalBIFs = new String[]{wedBIFF, "data/sfxsound.bif", "data/cresound.bif"};
     else if (gameID == ResourceFactory.ID_BG2 || gameID == ResourceFactory.ID_BG2TOB)
       legalBIFs = new String[]{wedBIFF, "data/ambsound.bif", "data/25ambsnd.bif", "data/sfxsound.bif"};

@@ -117,6 +117,7 @@ public final class AreResource extends AbstractStruct implements Resource, HasAd
                                 new TiledObject(), new AutomapNotePST()};
     else if (ResourceFactory.getGameID() == ResourceFactory.ID_BG2 ||
              ResourceFactory.getGameID() == ResourceFactory.ID_BG2TOB ||
+             ResourceFactory.getGameID() == ResourceFactory.ID_BGEE ||
              ResourceFactory.getGameID() == ResourceFactory.ID_TUTU)
       return new AddRemovable[]{new Actor(), new ITEPoint(), new SpawnPoint(),
                                 new Entrance(), new Container(), new Ambient(),
@@ -367,6 +368,7 @@ public final class AreResource extends AbstractStruct implements Resource, HasAd
     }
     else if (ResourceFactory.getGameID() == ResourceFactory.ID_BG2 ||
              ResourceFactory.getGameID() == ResourceFactory.ID_BG2TOB ||
+             ResourceFactory.getGameID() == ResourceFactory.ID_BGEE ||
              ResourceFactory.getGameID() == ResourceFactory.ID_TUTU) {
       offset_automapnote = new SectionOffset(buffer, offset + 196, "Automap notes offset",
                                              AutomapNote.class);

@@ -24,10 +24,14 @@ public final class PltResource implements Resource, ActionListener
   private JLabel imageLabel;
   private JPanel panel;
 
-  public PltResource(ResourceEntry entry) throws Exception
+  public PltResource(ResourceEntry entry) throws Throwable
   {
     this.entry = entry;
     buffer = entry.getResourceData();
+    String signature = new String(buffer, 0, 4);
+    if (signature.equals("BAMC") || signature.equals("BAM ")) {
+      throw new Throwable("BAM");
+    }
   }
 
 // --------------------- Begin Interface ActionListener ---------------------
@@ -103,7 +107,12 @@ public final class PltResource implements Resource, ActionListener
         palette = null;
       }
     }
-    new String(buffer, 0, 4); // Signature
+    String signature = new String(buffer, 0, 4); // Signature
+    if (!signature.equalsIgnoreCase("PLT "))
+    {
+    	System.err.println("Unsupported PLT format " + signature);
+    	return new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+    }
     new String(buffer, 4, 4); // Version
     Byteconvert.convertInt(buffer, 8); // Unknown 1
     Byteconvert.convertInt(buffer, 12); // Unknown 2

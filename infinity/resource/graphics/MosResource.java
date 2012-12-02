@@ -125,6 +125,7 @@ public final class MosResource implements Resource, ActionListener
     JScrollPane scroll = new JScrollPane(new JLabel(new ImageIcon(image)));
     if (ResourceFactory.getGameID() == ResourceFactory.ID_BG2 ||
         ResourceFactory.getGameID() == ResourceFactory.ID_BG2TOB ||
+        ResourceFactory.getGameID() == ResourceFactory.ID_BGEE ||
         compressed) {
       if (compressed) {
         bexport2 = new JButton("Decompress...", Icons.getIcon("Export16.gif"));

@@ -13,10 +13,19 @@ import infinity.resource.graphics.TisResource;
 import infinity.resource.wed.Overlay;
 import infinity.resource.wed.WedResource;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
 
 public final class ViewerGraphics extends ChildFrame implements Runnable
 {
@@ -65,6 +74,7 @@ public final class ViewerGraphics extends ChildFrame implements Runnable
       Container pane = getContentPane();
       pane.setLayout(new BorderLayout());
       label = new JLabel(new ImageIcon(image));
+      label.addMouseListener(new AreaMouseListener());
       pane.add(new JScrollPane(label), BorderLayout.CENTER);
       setSize(NearInfinity.getInstance().getSize());
       Center.center(this, NearInfinity.getInstance().getBounds());
@@ -90,6 +100,59 @@ public final class ViewerGraphics extends ChildFrame implements Runnable
     if (label != null && label.getIcon() != null)
       ((ImageIcon)label.getIcon()).getImage().flush();
     dispose();
+  }
+
+  private final class AreaMouseListener extends MouseAdapter
+  {
+	    private final AreaPopupMenu pmenu = new AreaPopupMenu();
+
+	    public void mouseReleased(MouseEvent e)
+	    {
+	    	if (e.isPopupTrigger()) {
+	    		pmenu.show(e.getComponent(), e.getX(), e.getY());
+	    	}
+	    }
+  }
+
+  private final class AreaPopupMenu extends JPopupMenu implements ActionListener
+  {
+    private final JMenuItem mi_save = new JMenuItem("Save as...");
+
+    AreaPopupMenu()
+    {
+      add(mi_save);
+      mi_save.addActionListener(this);
+    }
+
+    public void show(Component invoker, int x, int y)
+    {
+      super.show(invoker, x, y);
+    }
+
+    public void actionPerformed(ActionEvent event)
+    {
+      if (event.getSource() == mi_save) {
+    	  JFileChooser  fc = new JFileChooser();
+          fc.setDialogTitle("Save map");
+          fc.addChoosableFileFilter(new FileNameExtensionFilter("GIF Images", "gif"));
+          fc.addChoosableFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
+          fc.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Images", "jpg", "jpeg"));
+          fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+          fc.setAcceptAllFileFilterUsed(false);
+          if (fc.showSaveDialog(getTopLevelAncestor()) == JFileChooser.APPROVE_OPTION)
+          {
+        	  File output = fc.getSelectedFile();
+        	  FileNameExtensionFilter fFilter = (FileNameExtensionFilter) fc.getFileFilter();
+        	  if (!output.getName().endsWith("." + fFilter.getExtensions()[0]))
+        		  output = new File(output.getAbsolutePath() + "." + fFilter.getExtensions()[0]);
+        	  try {
+        		  ImageIO.write((RenderedImage) ((ImageIcon)label.getIcon()).getImage(), fFilter.getExtensions()[0], output);
+        	  } catch (IOException e) {
+        		  e.printStackTrace();
+        	  }        	  
+          }
+      }
+    }
   }
 }
 

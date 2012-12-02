@@ -29,7 +29,8 @@ public final class TisResource implements Resource, ActionListener, Closeable
   private JLabel imageLabels[];
   private JPanel panel;
   private byte imagedata[];
-  private int currentnr, tilesize, tileoffset;
+  private int currentnr, tilesize, tileoffset, tissize;
+  private HashMap<Byte, BufferedImage> pvrTileCache = new HashMap<Byte, BufferedImage>();
 
 //  public BufferedImage drawImage(int width, int height, int mapIndex, int lookupIndex, Overlay overlay)
 //  {
@@ -55,7 +56,9 @@ public final class TisResource implements Resource, ActionListener, Closeable
   {
     InputStream is = entry.getResourceDataAsStream();
     int tilesize;
+    int tissize = 0;
     byte tileBuffer[];
+    HashMap<Byte, BufferedImage> pvrTileCache = new HashMap<Byte, BufferedImage>();
 
     byte signature[] = Filereader.readBytes(is, 4);
     if (new String(signature).equalsIgnoreCase("TIS ")) {
@@ -69,7 +72,11 @@ public final class TisResource implements Resource, ActionListener, Closeable
     }
     else {
       tilesize = 64;
-      tileBuffer = new byte[tilesize * tilesize + 4 * 256];
+      tissize = entry.getResourceInfo()[1];
+      if (tilesize == tissize)
+        tileBuffer = new byte[tilesize * tilesize + 4 * 256];
+      else
+    	tileBuffer = new byte[12];
       System.arraycopy(signature, 0, tileBuffer, 0, 4);
       Filereader.readBytes(is, tileBuffer, 4, tileBuffer.length - 4);
     }
@@ -101,21 +108,53 @@ public final class TisResource implements Resource, ActionListener, Closeable
                          image.getRGB(lastTile.xpos * tilesize + x, lastTile.ypos * tilesize + y));
       }
       else {
-        for (int y = 0; y < tilesize; y++)
-          for (int x = 0; x < tilesize; x++)
-            image.setRGB(tile.xpos * tilesize + x, tile.ypos * tilesize + y,
-                         Palette.getColor(tileBuffer, 0, tileBuffer[4 * 256 + y * tilesize + x]));
+    	  if (tissize == 12)
+    	  {
+    		  if (tileBuffer[0] != -1 || tileBuffer[1] != -1 || tileBuffer[2] != -1 || tileBuffer[3] != -1)
+    		  {
+    			  BufferedImage pvrTile = pvrTileCache.get(tileBuffer[0]);
+    			  if (pvrTile == null)
+    			  {
+    				  String name = entry.getResourceName().charAt(0) +
+    						  entry.getResourceName().split("\\.")[0].substring(2) +
+    						  ((tileBuffer[0] > 9) ? "" : "0") + Integer.toString(tileBuffer[0]) +
+    						  ".PVR";
+    				  PvrResource res = (PvrResource) ResourceFactory.getResource(ResourceFactory.getInstance().getResourceEntry(name));
+    				  if (res != null)
+    				  {
+    					  pvrTile = res.getImage();
+    					  pvrTileCache.put(tileBuffer[0], pvrTile);
+    				  }
+    				  else
+    				  {
+    					  System.err.println("Error reading PVR tiles " + name);
+    					  continue;
+    				  }
+    			  }
+    			  for (int y = 0; y < tilesize; y++)
+    				  for (int x = 0; x < tilesize; x++)
+    					  image.setRGB(tile.xpos * tilesize + x, tile.ypos * tilesize + y,
+    							  pvrTile.getRGB(Byteconvert.convertShort(tileBuffer, 4) + x,
+    									  Byteconvert.convertShort(tileBuffer, 8) + y));
+    		  }
+    	  }
+    	  else
+    		  for (int y = 0; y < tilesize; y++)
+    			  for (int x = 0; x < tilesize; x++)
+    				  image.setRGB(tile.xpos * tilesize + x, tile.ypos * tilesize + y,
+    						  Palette.getColor(tileBuffer, 0, tileBuffer[4 * 256 + y * tilesize + x]));
       }
       lastTile = tile;
       if (i + 1 < tiles.size())
         Filereader.readBytes(is, tileBuffer);
     }
-
+    pvrTileCache.clear();
     return image;
   }
 
   public TisResource(ResourceEntry entry) throws Exception
   {
+	this.tissize = 0;
     this.entry = entry;
     imagedata = entry.getResourceData();
     String signature = new String(imagedata, 0, 4);
@@ -128,6 +167,7 @@ public final class TisResource implements Resource, ActionListener, Closeable
       // Due to bug in Keyfile?
       tileoffset = 0;
       tilesize = 64;
+      tissize = entry.getResourceInfo()[1];
     }
   }
 
@@ -164,6 +204,7 @@ public final class TisResource implements Resource, ActionListener, Closeable
         }
       }
     }
+    pvrTileCache.clear();
   }
 
 // --------------------- End Interface Closeable ---------------------
@@ -245,22 +286,61 @@ public final class TisResource implements Resource, ActionListener, Closeable
 
   private BufferedImage getTile(int nr)
   {
-    int offset = tileoffset + nr * (tilesize * tilesize + 4 * 256);
-    if (offset + (tilesize * tilesize + 4 * 256) > imagedata.length)
-      return null;
-    int paletteOffset = offset;
-    offset += 4 * 256;
-    BufferedImage tile = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_RGB);
-    for (int y = 0; y < tilesize; y++)
-      for (int x = 0; x < tilesize; x++)
-        tile.setRGB(x, y, Palette.getColor(imagedata, paletteOffset, imagedata[offset++]));
-    return tile;
+	  BufferedImage tile = new BufferedImage(tilesize, tilesize, BufferedImage.TYPE_INT_RGB);
+	  if (tissize == 12)
+	  {
+		  int offset = tileoffset + nr * tissize;
+		  if (offset + tissize > imagedata.length)
+			  return null;
+		  if (imagedata[offset] != -1 || imagedata[offset + 1] != -1 || imagedata[offset + 2] != -1 || imagedata[offset + 3] != -1)
+		  {
+			  BufferedImage pvrTile = pvrTileCache.get(imagedata[offset]);
+			  if (pvrTile == null)
+			  {
+				  String name = entry.getResourceName().charAt(0) +
+						  entry.getResourceName().split("\\.")[0].substring(2) +
+						  ((imagedata[offset] > 9) ? "" : "0") + Integer.toString(imagedata[offset]) +
+						  ".PVR";
+				  PvrResource res = (PvrResource) ResourceFactory.getResource(ResourceFactory.getInstance().getResourceEntry(name));
+				  if (res != null)
+				  {
+					  pvrTile = res.getImage();
+					  pvrTileCache.put(imagedata[offset], pvrTile);
+				  }
+				  else
+				  {
+					  System.err.println("Error reading PVR tiles " + name);
+					  return null;
+				  }
+			  }
+			  for (int y = 0; y < tilesize; y++)
+				  for (int x = 0; x < tilesize; x++)
+					  tile.setRGB(x, y,
+							  pvrTile.getRGB(Byteconvert.convertShort(imagedata, offset + 4) + x,
+									  Byteconvert.convertShort(imagedata, offset + 8) + y));
+		  }
+	  }
+	  else
+	  {
+		  int offset = tileoffset + nr * (tilesize * tilesize + 4 * 256);
+		  if (offset + (tilesize * tilesize + 4 * 256) > imagedata.length)
+			  return null;
+		  int paletteOffset = offset;
+		  offset += 4 * 256;
+		  for (int y = 0; y < tilesize; y++)
+			  for (int x = 0; x < tilesize; x++)
+				  tile.setRGB(x, y, Palette.getColor(imagedata, paletteOffset, imagedata[offset++]));
+	  }
+	  return tile;
   }
 
   private void showTiles(int nr)
   {
     bprev.setEnabled(nr > 0);
-    bnext.setEnabled((nr + labels.length) * (tilesize * tilesize + 4 * 256) < imagedata.length -
+    if (tissize == 12)
+      bnext.setEnabled((nr + labels.length) * 12 < imagedata.length - tileoffset);
+    else
+      bnext.setEnabled((nr + labels.length) * (tilesize * tilesize + 4 * 256) < imagedata.length -
                                                                               tileoffset);
     for (int i = 0; i < labels.length; i++) {
       ImageIcon lastimage = (ImageIcon)imageLabels[i].getIcon();

@@ -299,7 +299,7 @@ public final class BIFFArchive
     int size = Filereader.readInt(ranfile);
     if (isTile)
       size *= Filereader.readInt(ranfile); // tilecount * tilesize
-//    Filereader.readShort(ranfile); // Type
+    short type = Filereader.readShort(ranfile); // Type
 //    Filereader.readShort(ranfile); // Unknown
     if (size > 1000000)
       blocker.setBlocked(true);
@@ -307,6 +307,21 @@ public final class BIFFArchive
     byte buffer[] = new byte[size];
     ranfile.seek((long)resoff);
     ranfile.readFully(buffer);
+
+    if (type == 0x404)
+    {
+		Inflater inflater = new Inflater();
+		inflater.setInput(buffer, 4, size - 4);
+
+		size = Byteconvert.convertInt(buffer, 0);
+		buffer = new byte[size];
+		try {
+			inflater.inflate(buffer);
+		} catch (DataFormatException e) {
+			e.printStackTrace();
+			throw new IOException();
+		}
+    }
     return buffer;
   }
 

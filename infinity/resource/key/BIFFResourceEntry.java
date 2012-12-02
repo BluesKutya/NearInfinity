@@ -5,6 +5,7 @@
 package infinity.resource.key;
 
 import infinity.gui.BrowserMenuBar;
+import infinity.resource.AbstractStruct;
 import infinity.resource.ResourceFactory;
 import infinity.resource.Writeable;
 import infinity.util.*;

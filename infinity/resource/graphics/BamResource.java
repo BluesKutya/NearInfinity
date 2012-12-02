@@ -217,6 +217,7 @@ public final class BamResource implements Resource, ActionListener, ItemListener
     iCompress.setEnabled(false);
     if (ResourceFactory.getGameID() == ResourceFactory.ID_BG2 ||
         ResourceFactory.getGameID() == ResourceFactory.ID_BG2TOB ||
+        ResourceFactory.getGameID() == ResourceFactory.ID_BGEE ||
         ResourceFactory.getGameID() == ResourceFactory.ID_ICEWIND2 ||
         compressed) {
       if (compressed)

@@ -38,7 +38,7 @@ public final class BmpResource implements Resource, ActionListener
     Byteconvert.convertShort(data, 26); // Planes
     int bitcount = (int)Byteconvert.convertShort(data, 28);
     int compression = Byteconvert.convertInt(data, 30);
-    if (compression != 0)
+    if (compression != 0 && compression != 3)
       throw new Exception("Compressed BMP files not supported");
     Byteconvert.convertInt(data, 34); // Comprsize
     Byteconvert.convertInt(data, 38); // Xpixprm
@@ -143,6 +143,13 @@ public final class BmpResource implements Resource, ActionListener
     else if (bitcount == 24) {
       for (int x = 0; x < width / 3; x++) {
         byte[] color = {data[offset + 3 * x], data[offset + 3 * x + 1], data[offset + 3 * x + 2], 0};
+        image.setRGB(x, y, Byteconvert.convertInt(color, 0));
+      }
+    }
+    else if (bitcount == 32) {
+      for (int x = 0; x < width / 4; x++) {
+//        byte[] color = {data[offset + 4 * x + 3], data[offset + 4 * x + 2], data[offset + 4 * x + 1], data[offset + 4 * x]};
+        byte[] color = {data[offset + 4 * x], data[offset + 4 * x + 1], data[offset + 4 * x + 2], data[offset + 4 * x + 3]};
         image.setRGB(x, y, Byteconvert.convertInt(color, 0));
       }
     }

@@ -290,6 +290,8 @@ public final class Keyfile
       resourceicons.put("PRO", ICON_STRUCT);
       extmap.put(0x3fe, "BIO");
       resourceicons.put("BIO", ICON_TEXT);
+      extmap.put(0x404, "PVR");
+      resourceicons.put("PVR", ICON_IMAGE);
       extmap.put(0x44c, "BAH"); // ???????
       extmap.put(0x802, "INI");
       resourceicons.put("INI", ICON_TEXT);

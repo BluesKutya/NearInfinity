@@ -163,7 +163,8 @@ final class ChooseBIFFrame extends ChildFrame implements ActionListener
       int gameid = ResourceFactory.getGameID();
       rbbif.setEnabled(gameid == ResourceFactory.ID_ICEWIND || gameid == ResourceFactory.ID_ICEWINDHOW ||
                        gameid == ResourceFactory.ID_ICEWINDHOWTOT);
-      rbbifc.setEnabled(gameid == ResourceFactory.ID_BG2 || gameid == ResourceFactory.ID_BG2TOB);
+      rbbifc.setEnabled(gameid == ResourceFactory.ID_BG2 || gameid == ResourceFactory.ID_BG2TOB ||
+    		  			gameid == ResourceFactory.ID_BGEE);
     }
     else if (event.getSource() == bok || event.getSource() == tfbifname) {
       if (rbcreate.isSelected()) {

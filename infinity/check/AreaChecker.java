@@ -310,7 +310,7 @@ public final class AreaChecker implements Runnable, ListSelectionListener, Actio
 		boolean isFound = false;
 		TextString entName;
 		AreResource dArea;
-		
+
 		entName  = (TextString) tTriger.getAttribute("Entrance name");
 		dArea = (AreResource) ResourceFactory.getResource(ResourceFactory.getInstance().
 				getResourceEntry(dAreaRef.getResourceName()));

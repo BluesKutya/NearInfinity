@@ -24,7 +24,7 @@ final class Window extends AbstractStruct // implements AddRemovable
 
   Window(AbstractStruct superStruct, byte buffer[], int offset, int nr, int size) throws Exception
   {
-    super(superStruct, "Panel " + nr, buffer, offset + (size - 28));
+    super(superStruct, "Panel " + nr, buffer, offset + ((size == 36) ? 8 : 0));
     if (size == 36) {
       list.add(0, new TextString(buffer, offset, 8, "Name"));
       setStartOffset(getOffset() - 8);
