@@ -73,7 +73,7 @@ public final class TisResource implements Resource, ActionListener, Closeable
     else {
       tilesize = 64;
       tissize = entry.getResourceInfo()[1];
-      if (tilesize == tissize)
+      if (12 != tissize)
         tileBuffer = new byte[tilesize * tilesize + 4 * 256];
       else
     	tileBuffer = new byte[12];
