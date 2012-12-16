@@ -254,7 +254,7 @@ public final class ResourceFactory
 			}
 		else if (entry.getExtension().equalsIgnoreCase("BCS") ||
                  entry.getExtension().equalsIgnoreCase("BS"))
-          res = new BcsResource(entry);
+		  res = new BcsResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("ITM"))
           res = new ItmResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("EFF"))
@@ -354,10 +354,6 @@ public final class ResourceFactory
 
   public ResourceFactory(File file)
   {
-	if (resourceCache == null)
-		resourceCache = new WeakHashMap<String, Resource>();
-	else
-		resourceCache.clear();
     rootDir = file.getAbsoluteFile().getParentFile();
 
     // Main game detection
@@ -581,6 +577,11 @@ public final class ResourceFactory
   public void loadResources() throws Exception
   {
     treeModel = new ResourceTreeModel();
+
+	if (resourceCache == null)
+		resourceCache = new WeakHashMap<String, Resource>();
+	else
+		resourceCache.clear();
 
     // Get resources from keyfile
     keyfile.addBIFFResourceEntries(treeModel);

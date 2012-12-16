@@ -357,7 +357,7 @@ final class Viewer extends JTabbedPane implements ChangeListener, TableModelList
 				
 				path.add(entry);
 				Object parent = getParent(entry);
-				while (parent != null) {
+				while (parent != null && !path.contains(parent)) {
 					path.add(parent);
 					parent = getParent(parent);
 				}
