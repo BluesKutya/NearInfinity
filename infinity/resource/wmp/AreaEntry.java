@@ -39,6 +39,15 @@ public final class AreaEntry extends AbstractStruct implements AddRemovable, Has
 
 // --------------------- End Interface HasDetailViewer ---------------------
 
+//--------------------- Begin Interface AddRemovable ---------------------
+
+  public boolean canRemove()
+  {
+    return true;
+  }
+
+//--------------------- End Interface AddRemovable ---------------------
+
   protected int read(byte buffer[], int offset) throws Exception
   {
     list.add(new ResourceRef(buffer, offset, "Current area", "ARE"));

@@ -301,7 +301,8 @@ public final class ResourceTree extends JPanel implements TreeSelectionListener,
     {
         TreePath path = tree.getClosestPathForLocation(e.getX(), e.getY());
         
-        if (path != null && path.getLastPathComponent() instanceof ResourceEntry)
+        if (path != null && path.getLastPathComponent() instanceof ResourceEntry 
+            && SwingUtilities.getWindowAncestor((Component)e.getSource()).isActive())
         {
         	maybeShowPreview(path);
         }

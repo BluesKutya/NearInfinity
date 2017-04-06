@@ -5,6 +5,7 @@
 package infinity.resource.bcs;
 
 import infinity.NearInfinity;
+import infinity.gui.BrowserMenuBar;
 import infinity.gui.StatusBar;
 import infinity.resource.ResourceFactory;
 import infinity.resource.are.AreResource;
@@ -105,7 +106,8 @@ public final class Compiler
       };
     emptyObject = compileObject(null, "");
 
-    setupScriptNames();
+    if (BrowserMenuBar.getInstance().checkScriptNames())
+      setupScriptNames();
   }
 
   private void setupScriptNames()
@@ -321,7 +323,7 @@ public final class Compiler
     else {                                                          // Resource checks
       String resourceTypes[] = new String[0];
       if (definition.equalsIgnoreCase("S:DialogFile*"))
-        resourceTypes = new String[] {".DLG", ".VVC"};
+        resourceTypes = new String[] {".DLG", ".VEF", ".VVC"};
       else if (definition.equalsIgnoreCase("S:CutScene*") ||
                definition.equalsIgnoreCase("S:ScriptFile*") ||
                definition.equalsIgnoreCase("S:Script*"))
@@ -338,7 +340,7 @@ public final class Compiler
       else if (definition.equalsIgnoreCase("S:TextList*"))
         resourceTypes = new String[]{".2DA"};
       else if (definition.equalsIgnoreCase("S:Effect*"))
-        resourceTypes = new String[]{".BAM", ".VVC"};
+        resourceTypes = new String[]{".BAM", ".VEF", ".VVC"};
       else if (definition.equalsIgnoreCase("S:Parchment*"))
         resourceTypes = new String[]{".MOS"};
       else if (definition.equalsIgnoreCase("S:Spell*") ||
@@ -358,10 +360,10 @@ public final class Compiler
         resourceTypes = new String[]{".BMP"};
       else if (definition.equalsIgnoreCase("S:ResRef*"))
         resourceTypes = Decompiler.getResRefType(function.substring(0, function.length() - 1));
-      else if (definition.equalsIgnoreCase("S:Object*")) // ToDo: Better check possible?
-        resourceTypes = new String[]{".ITM", ".VVC", ".BAM"};
-      else if (definition.equalsIgnoreCase("S:NewObject*")) // ToDo: Better check possible?
-        resourceTypes = new String[]{".CRE", ".DLG", ".BCS", ".ITM"};
+      else if (definition.equalsIgnoreCase("S:Object*"))
+        resourceTypes = Decompiler.getResRefType(function.substring(0, function.length() - 1));
+      else if (definition.equalsIgnoreCase("S:NewObject*"))
+        resourceTypes = Decompiler.getResRefType(function.substring(0, function.length() - 1));
 
       if (resourceTypes.length > 0) {
         for (final String resourceType : resourceTypes)

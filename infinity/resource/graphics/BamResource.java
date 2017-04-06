@@ -339,9 +339,11 @@ public final class BamResource implements Resource, ActionListener, ItemListener
         }
       }
       image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+      int rgbImage[] = new int[height*width];
       for (int h_idx = 0; h_idx < height; h_idx++)
         for (int w_idx = 0; w_idx < width; w_idx++)
-          image.setRGB(w_idx, h_idx, palette.getColor((int)imagedata[h_idx * width + w_idx]));
+          rgbImage[h_idx * width + w_idx] = palette.getColor((int)imagedata[h_idx * width + w_idx]);
+      image.getRaster().setDataElements(0, 0, width, height, rgbImage);
     }
   }
 

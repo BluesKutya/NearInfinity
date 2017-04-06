@@ -285,11 +285,20 @@ public final class Keyfile
       resourceicons.put("CHR", ICON_STRUCT);
       extmap.put(0x3fb, "VVC");
       resourceicons.put("VVC", ICON_STRUCT);
-      extmap.put(0x3fc, "VEF"); // ????????
+      extmap.put(0x3fc, "VEF");
+      resourceicons.put("VEF", ICON_STRUCT);
       extmap.put(0x3fd, "PRO");
       resourceicons.put("PRO", ICON_STRUCT);
       extmap.put(0x3fe, "BIO");
       resourceicons.put("BIO", ICON_TEXT);
+      extmap.put(0x400, "FNT");
+      resourceicons.put("FNT", ICON_IMAGE);
+      extmap.put(0x401, "WBM");
+      resourceicons.put("WBM", ICON_MOVIE);
+      extmap.put(0x402, "GUI");
+      resourceicons.put("GUI", ICON_TEXT);
+      extmap.put(0x403, "SQL");
+      resourceicons.put("SQL", ICON_TEXT);
       extmap.put(0x404, "PVR");
       resourceicons.put("PVR", ICON_IMAGE);
       extmap.put(0x44c, "BAH"); // ???????
@@ -304,6 +313,8 @@ public final class Keyfile
       resourceicons.put("TXT", ICON_TEXT);
       resourceicons.put("RES", ICON_TEXT);
       resourceicons.put("BAF", ICON_SCRIPT);
+      resourceicons.put("TOH", ICON_STRUCT);
+      resourceicons.put("TOT", ICON_STRUCT);
     }
   }
 

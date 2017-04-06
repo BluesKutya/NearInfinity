@@ -39,26 +39,29 @@ public final class ViewerMap extends JPanel implements ListSelectionListener
   
   public ViewerMap(MapEntry wmpMap)
   {
-	this.wmpMap = wmpMap;
+    this.wmpMap = wmpMap;
     ResourceRef iconRef = (ResourceRef)wmpMap.getAttribute("Map icons");
     if (iconRef != null) {
       ResourceEntry iconEntry = ResourceFactory.getInstance().getResourceEntry(iconRef.getResourceName());
       if (iconEntry != null)
         icons = (BamResource)ResourceFactory.getResource(iconEntry);
     }
-    JLabel mapLabel = ViewerUtil.makeImagePanel((ResourceRef)wmpMap.getAttribute("Map"));
-    mapLabel.addMouseListener(new MapMouseListener());
-    map = (BufferedImage)((ImageIcon)mapLabel.getIcon()).getImage();
-    drawIcons();
-    areas = ViewerUtil.makeListPanel("Areas", wmpMap, AreaEntry.class, "Name",
+    if (ResourceFactory.getInstance().resourceExists(((ResourceRef)wmpMap.getAttribute("Map")).getResourceName())) {
+      JLabel mapLabel = ViewerUtil.makeImagePanel((ResourceRef)wmpMap.getAttribute("Map"));
+      mapLabel.addMouseListener(new MapMouseListener());
+      map = (BufferedImage)((ImageIcon)mapLabel.getIcon()).getImage();
+      drawIcons();
+      areas = ViewerUtil.makeListPanel("Areas", wmpMap, AreaEntry.class, "Name",
                                             new WmpAreaListRenderer(icons), this);
-    mapScroll = new JScrollPane(mapLabel);
-    mapScroll.setBorder(BorderFactory.createEmptyBorder());
+      mapScroll = new JScrollPane(mapLabel);
+      mapScroll.setBorder(BorderFactory.createEmptyBorder());
 
-    JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mapScroll, areas);
-    split.setDividerLocation(NearInfinity.getInstance().getWidth() - 475);
-    setLayout(new BorderLayout());
-    add(split, BorderLayout.CENTER);
+      JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mapScroll, areas);
+      split.setDividerLocation(NearInfinity.getInstance().getWidth() - 475);
+      setLayout(new BorderLayout());
+      add(split, BorderLayout.CENTER);
+    } else
+    	map = null;
   }
 
   public void drawIcons()

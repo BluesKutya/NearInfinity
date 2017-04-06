@@ -22,13 +22,17 @@ import infinity.resource.mus.MusResource;
 import infinity.resource.nwn.*;
 import infinity.resource.nwn.gff.GffResource;
 import infinity.resource.other.*;
+import infinity.resource.pro.ProResource;
 import infinity.resource.sav.SavResource;
 import infinity.resource.sound.AcmResource;
 import infinity.resource.sound.WavResource;
 import infinity.resource.spl.SplResource;
 import infinity.resource.src.SrcResource;
 import infinity.resource.sto.StoResource;
+import infinity.resource.toh.TohResource;
+import infinity.resource.tot.TotResource;
 import infinity.resource.var.VarResource;
+import infinity.resource.vef.VefResource;
 import infinity.resource.wed.WedResource;
 import infinity.resource.wmp.WmpResource;
 import infinity.resource.kotor.RimResource;
@@ -36,6 +40,7 @@ import infinity.resource.kotor.GlobalVarsResource;
 import infinity.util.*;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -229,6 +234,8 @@ public final class ResourceFactory
                  entry.getExtension().equalsIgnoreCase("RES") ||
                  entry.getExtension().equalsIgnoreCase("INI") ||
                  entry.getExtension().equalsIgnoreCase("TXT") ||
+                 entry.getExtension().equalsIgnoreCase("GUI") ||
+                 entry.getExtension().equalsIgnoreCase("SQL") ||
                  (entry.getExtension().equalsIgnoreCase("SRC") && getGameID() == ID_ICEWIND2))
         {
         	if (cache)
@@ -259,6 +266,8 @@ public final class ResourceFactory
           res = new ItmResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("EFF"))
           res = new EffResource(entry);
+        else if (entry.getExtension().equalsIgnoreCase("VEF"))
+            res = new VefResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("VVC"))
           res = new VvcResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("SRC"))
@@ -330,6 +339,10 @@ public final class ResourceFactory
           res = new BafResource(entry);
         else if (entry.getExtension().equalsIgnoreCase("PVR"))
             res = new PvrResource(entry);
+        else if (entry.getExtension().equalsIgnoreCase("TOH"))
+        	res = new TohResource(entry);
+        else if (entry.getExtension().equalsIgnoreCase("TOT"))
+        	res = new TotResource(entry);
         else
           res = new UnknownResource(entry);
       }
@@ -728,7 +741,8 @@ public final class ResourceFactory
         Kit2daBitmap.resetKitlist();
       else if (resource.getResourceEntry().toString().equalsIgnoreCase("SONGLIST.2DA"))
         Song2daBitmap.resetSonglist();
-      else if (resourceCache.containsKey(resource.getResourceEntry().getResourceName()))
+      
+      if (resourceCache.containsKey(resource.getResourceEntry().getResourceName()))
     	resourceCache.remove(resource.getResourceEntry().getResourceName());
     } catch (IOException e) {
       JOptionPane.showMessageDialog(parent, "Error while saving " + resource.getResourceEntry().toString(),

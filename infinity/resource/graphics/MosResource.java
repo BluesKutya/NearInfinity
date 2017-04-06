@@ -61,18 +61,15 @@ public final class MosResource implements Resource, ActionListener
       }
 
     image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    int xoff = 0, yoff = 0;
+    int tile[] = new int[64*64];
     for (int y = 0; y < rows; y++) {
-      int h = Math.min(64, height - yoff);
+      int h = Math.min(64, height - (y<<6));
       for (int x = 0; x < columns; x++) {
-        int w = Math.min(64, width - xoff);
-        for (int ty = yoff; ty < h + yoff; ty++)
-          for (int tx = xoff; tx < w + xoff; tx++)
-            image.setRGB(tx, ty, palettes[x][y].getColor((int)data[offset++]));
-        xoff += 64;
+        int w = Math.min(64, width - (x<<6));
+        for (int l = 0; l < h*w; l++)
+          tile[l] = palettes[x][y].getColor((int)data[offset++]);
+        image.getRaster().setDataElements(x<<6, y<<6, w, h, tile);
       }
-      xoff = 0;
-      yoff += 64;
     }
   }
 

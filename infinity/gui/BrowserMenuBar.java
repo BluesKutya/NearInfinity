@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
 
 public final class BrowserMenuBar extends JMenuBar
 {
-  public static final String VERSION = "v1.34 beta 2";
+  public static final String VERSION = "v1.35 beta 1";
   public static final int OVERRIDE_IN_THREE = 0, OVERRIDE_IN_OVERRIDE = 1, OVERRIDE_SPLIT = 2;
   public static final int LOOKFEEL_JAVA = 0, LOOKFEEL_WINDOWS = 1, LOOKFEEL_MOTIF = 2, LOOKFEEL_PLASTICXP = 3;
   public static final int RESREF_ONLY = 0, RESREF_REF_NAME = 1, RESREF_NAME_REF = 2;
@@ -48,6 +48,7 @@ public final class BrowserMenuBar extends JMenuBar
   private static final String OPTION_AUTOCONVERT_WAV = "AutoconvertWAV";
   private static final String OPTION_AUTOCHECK_BCS = "AutocheckBCS";
   private static final String OPTION_CACHEOVERRIDE = "CacheOverride";
+  private static final String OPTION_CHECKSCRIPTNAMES = "CheckScriptNames";
   private static final String OPTION_SHOWOVERRIDES = "ShowOverridesIn";
   private static final String OPTION_SHOWRESREF = "ShowResRef";
   private static final String OPTION_LOOKANDFEEL = "LookAndFeel";
@@ -227,6 +228,7 @@ public final class BrowserMenuBar extends JMenuBar
     prefs.putBoolean(OPTION_AUTOCHECK_BCS, optionAutocheckBCS.isSelected());
     prefs.putBoolean(OPTION_CACHEOVERRIDE, optionCacheOverride.isSelected());
     prefs.putBoolean(OPTION_AREAPREVIEW, optionAreaPreview.isSelected());
+    prefs.putBoolean(OPTION_CHECKSCRIPTNAMES, optionCheckScriptNames.isSelected());
     prefs.putInt(OPTION_SHOWRESREF, getResRefMode());
     prefs.putInt(OPTION_SHOWOVERRIDES, getOverrideMode());
     prefs.putInt(OPTION_LOOKANDFEEL, getLookAndFeel());
@@ -280,6 +282,11 @@ public final class BrowserMenuBar extends JMenuBar
     optionAreaPreview =
     new JCheckBoxMenuItem("Area preview", prefs.getBoolean(OPTION_AREAPREVIEW, true));
     menu.add(optionAreaPreview);
+    optionCheckScriptNames =
+    new JCheckBoxMenuItem("Interactive script names", prefs.getBoolean(OPTION_CHECKSCRIPTNAMES, true));
+    optionCheckScriptNames.setToolTipText("With this option disabled, performance may be boosted " +
+                                          "but many features involving script names will be disabled.");
+    menu.add(optionCheckScriptNames);
 
 
     menu.addSeparator();
@@ -1023,9 +1030,9 @@ public final class BrowserMenuBar extends JMenuBar
         bcsframe.setVisible(true);
       }
       else if (event.getSource() == toolCheckAllDialog)
-        new DialogCheker(false);
+        new DialogChecker(false);
       else if (event.getSource() == toolCheckOverrideDialog)
-        new DialogCheker(true);
+        new DialogChecker(true);
       else if (event.getSource() == toolCheckResRef)
         new ResRefChecker();
       else if (event.getSource() == toolCheckCREInv)

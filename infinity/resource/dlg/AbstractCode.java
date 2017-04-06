@@ -201,6 +201,15 @@ public abstract class AbstractCode extends Datatype implements Editable, AddRemo
 // --------------------- End Interface Editable ---------------------
 
 
+//--------------------- Begin Interface AddRemovable ---------------------
+
+  public boolean canRemove()
+  {
+    return true;
+  }
+
+//--------------------- End Interface AddRemovable ---------------------
+
 // --------------------- Begin Interface ItemListener ---------------------
 
   public void itemStateChanged(ItemEvent event)

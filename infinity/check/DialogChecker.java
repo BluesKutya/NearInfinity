@@ -20,7 +20,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
-public final class DialogCheker implements Runnable, ActionListener, ListSelectionListener, ChangeListener
+public final class DialogChecker implements Runnable, ActionListener, ListSelectionListener, ChangeListener
 {
   private final boolean checkOnlyOverride;
   private ChildFrame resultFrame;
@@ -28,7 +28,7 @@ public final class DialogCheker implements Runnable, ActionListener, ListSelecti
   private JTabbedPane tabbedPane;
   private SortableTable errorTable, warningTable;
 
-  public DialogCheker(boolean checkOnlyOverride)
+  public DialogChecker(boolean checkOnlyOverride)
   {
     this.checkOnlyOverride = checkOnlyOverride;
     new Thread(this).start();

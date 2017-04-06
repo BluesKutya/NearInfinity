@@ -341,16 +341,16 @@ public class ScriptTextArea extends JTextArea {
     }
     // and now the ambiguous
     else if (definition.equalsIgnoreCase("S:Effect*")) {
-      return new String[] { ".BAM", ".VVC" };
+      return new String[] { ".BAM", ".VEF", ".VVC" };
     }
     else if (definition.equalsIgnoreCase("S:DialogFile*")) {
-      return new String[] { ".DLG", ".VVC" };
+      return new String[] { ".DLG", ".VEF", ".VVC" };
     }
     else if (definition.equalsIgnoreCase("S:Object*")) {
-      return new String[] { ".ITM", ".VVC", ".BAM" };
+      return Decompiler.getResRefType(function);
     }
     else if (definition.equalsIgnoreCase("S:NewObject*")) {
-      return new String[] { ".CRE", ".DLG", ".BCS", ".ITM" };
+      return Decompiler.getResRefType(function);
     }
     else if (definition.equalsIgnoreCase("S:ResRef*")) {
       return Decompiler.getResRefType(function);
