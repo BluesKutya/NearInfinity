@@ -12,11 +12,13 @@ public final class Icons
 {
   private static final Map<String, ImageIcon> ICONMAP = new HashMap<String, ImageIcon>(50);
 
+  private static final String ICON_RES_FOLDER = "/icon/";
+
   public static ImageIcon getIcon(String name)
   {
     ImageIcon icon = ICONMAP.get(name);
     if (icon == null) {
-      icon = new ImageIcon(Icons.class.getResource(name));
+      icon = new ImageIcon(Icons.class.getResource(ICON_RES_FOLDER + name));
       ICONMAP.put(name, icon);
     }
     return icon;
